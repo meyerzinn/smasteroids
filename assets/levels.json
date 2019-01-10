@@ -1,0 +1,55 @@
+[
+  {
+    "name": "Lower School",
+    "difficulty": 10,
+    "teachers": [
+      "carrio",
+      "materre",
+      "pigg",
+      "wetzel"
+    ]
+  },
+  {
+    "name": "Middle School",
+    "difficulty": 50,
+    "teachers": [
+      "dillon",
+      "hoehn",
+      "kiehn",
+      "smith"
+    ]
+  },
+  {
+    "name": "The Biologists",
+    "difficulty": 75,
+    "teachers": [
+      "flint",
+      "israni",
+      "adame"
+    ]
+  },
+  {
+    "name": "The Chemists",
+    "difficulty": 100,
+    "teachers": [
+      "macaraeg",
+      "owens"
+    ]
+  },
+  {
+    "name": "The Physicists",
+    "teachers": [
+      "houpt",
+      "hoehn",
+      "balog",
+      "carron"
+    ]
+  },
+  {
+    "name": "The Lorax",
+    "difficulty": 400,
+    "teachers": [
+      "northcut"
+    ]
+  }
+]
