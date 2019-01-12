@@ -4,4 +4,5 @@ type Level struct {
 	Name       string
 	Difficulty int
 	Teachers   []string
+	Number     int `json:"-"`
 }

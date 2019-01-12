@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/text"
 	"github.com/gobuffalo/packr"
 	"github.com/golang/freetype/truetype"
 	"github.com/meyerzinn/smastroids/game"
 	"github.com/pkg/errors"
 	"golang.org/x/image/font"
 	"image"
+	_ "image/png"
 	"path"
 )
 
@@ -18,11 +20,12 @@ var (
 	DeathMessages map[string][]string
 	Levels        []game.Level
 
-	FontTitle     font.Face
-	FontInterface font.Face
+	FontTitle     *text.Atlas
+	FontInterface *text.Atlas
+	FontSubtitle  *text.Atlas
 )
 
-func Init() {
+func init() {
 	assets := packr.NewBox("./data")
 
 	// load teachers and associated images
@@ -65,6 +68,10 @@ func Init() {
 	if err != nil {
 		panic(errors.Wrap(err, "parsing levels from JSON"))
 	}
+	for i, l := range Levels {
+		l.Number = i + 1
+		Levels[i] = l
+	}
 
 	// load fonts
 	ps2pRaw, err := assets.Find("fonts/PressStart2P.ttf")
@@ -75,23 +82,28 @@ func Init() {
 	if err != nil {
 		panic(errors.Wrap(err, "initializing title font face"))
 	}
-	FontTitle = title
+	FontTitle = text.NewAtlas(title, text.ASCII)
 
-	footer, err := loadTTF(ps2pRaw, 18)
+	inter, err := loadTTF(ps2pRaw, 18)
 	if err != nil {
-		panic(errors.Wrap(err, "initializing normal font face"))
+		panic(errors.Wrap(err, "initializing interface font face"))
 	}
-	FontInterface = footer
+	FontInterface = text.NewAtlas(inter, text.ASCII)
 
+	subtitle, err := loadTTF(ps2pRaw, 36)
+	if err != nil {
+		panic(errors.Wrap(err, "initializing subtitle font face"))
+	}
+	FontSubtitle = text.NewAtlas(subtitle, text.ASCII)
 }
 
 func loadTTF(raw []byte, size float64) (font.Face, error) {
-	font, err := truetype.Parse(raw)
+	f, err := truetype.Parse(raw)
 	if err != nil {
 		return nil, err
 	}
 
-	return truetype.NewFace(font, &truetype.Options{
+	return truetype.NewFace(f, &truetype.Options{
 		Size:              size,
 		GlyphCacheEntries: 1,
 	}), nil
