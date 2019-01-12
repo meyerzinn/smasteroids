@@ -1,4 +1,4 @@
-module github.com/20zinnm/smastroids
+module github.com/meyerzinn/smastroids
 
 require (
 	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect
@@ -8,6 +8,8 @@ require (
 	github.com/go-gl/glfw v0.0.0-20181213070059-819e8ce5125f // indirect
 	github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a // indirect
 	github.com/gobuffalo/packr v1.21.9
-	github.com/pkg/errors v0.8.1 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+	github.com/pkg/errors v0.8.1
+	gocv.io/x/gocv v0.18.0 // indirect
 	golang.org/x/image v0.0.0-20181116024801-cd38e8056d9b
 )
