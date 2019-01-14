@@ -20,7 +20,7 @@ type levelTitleScene struct {
 func (s *levelTitleScene) Render(win *pixelgl.Window, canvas *pixelgl.Canvas) {
 	select {
 	case <-s.nextTimer.C:
-		//Current = Level
+		Current = Level(s.levelIndex)
 		return
 	default:
 	}
@@ -29,7 +29,7 @@ func (s *levelTitleScene) Render(win *pixelgl.Window, canvas *pixelgl.Canvas) {
 	matrix := pixel.IM.Moved(canvas.Bounds().Min.Add(pixel.V(canvas.Bounds().W()/2, canvas.Bounds().H()*5/9)).Sub(bounds.Center()))
 	s.levelText.Draw(canvas, matrix)
 	bounds = s.titleText.Bounds()
-	matrix = pixel.IM.Moved(canvas.Bounds().Min.Add(pixel.V(canvas.Bounds().W()/2, canvas.Bounds().H() * 4/9)).Sub(bounds.Center()))
+	matrix = pixel.IM.Moved(canvas.Bounds().Min.Add(pixel.V(canvas.Bounds().W()/2, canvas.Bounds().H()*4/9)).Sub(bounds.Center()))
 	s.titleText.Draw(canvas, matrix)
 }
 

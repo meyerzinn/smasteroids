@@ -14,16 +14,18 @@ func run() {
 	primaryMonitor := pixelgl.PrimaryMonitor()
 	width, height := primaryMonitor.Size()
 	cfg := pixelgl.WindowConfig{
-		Title:   "SMasteroids",
-		Bounds:  pixel.R(0, 0, width, height),
-		VSync:   true,
-		Monitor: primaryMonitor,
+		Title:     "SMasteroids",
+		Bounds:    pixel.R(0, 0, width, height),
+		VSync:     true,
+		Resizable: true,
+		//Monitor: primaryMonitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
 	if err != nil {
 		panic(err)
 	}
+	CenterWindow(win)
 	//win.SetMatrix(pixel.IM.Scaled(win.Bounds().Center(), width/1024.0))
 	canvas := pixelgl.NewCanvas(pixel.R(-1920/2, -1080/2, 1920/2, 1080/2))
 	scenes.Current = scenes.Start()
@@ -31,7 +33,6 @@ func run() {
 	ticker := time.NewTicker(tickDuration)
 	defer ticker.Stop()
 	for !win.Closed() {
-		<-ticker.C // wait for next tick
 		win.Clear(colornames.Black)
 		scenes.Current.Render(win, canvas)
 		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, math.Min(
@@ -43,7 +44,19 @@ func run() {
 			win.SetClosed(true)
 		}
 		win.Update()
+		<-ticker.C // wait for next tick
 	}
+}
+
+func CenterWindow(win *pixelgl.Window) {
+	x, y := pixelgl.PrimaryMonitor().Size()
+	width, height := win.Bounds().Size().XY()
+	win.SetPos(
+		pixel.V(
+			x/2-width/2,
+			y/2-height/2,
+		),
+	)
 }
 
 func main() {

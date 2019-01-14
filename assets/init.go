@@ -23,6 +23,7 @@ var (
 	FontTitle     *text.Atlas
 	FontInterface *text.Atlas
 	FontSubtitle  *text.Atlas
+	FontLabel *text.Atlas
 )
 
 func init() {
@@ -95,6 +96,12 @@ func init() {
 		panic(errors.Wrap(err, "initializing subtitle font face"))
 	}
 	FontSubtitle = text.NewAtlas(subtitle, text.ASCII)
+
+	label, err := loadTTF(ps2pRaw, 12)
+	if err != nil {
+		panic(errors.Wrap(err, "initializing label font face"))
+	}
+	FontLabel = text.NewAtlas(label, text.ASCII)
 }
 
 func loadTTF(raw []byte, size float64) (font.Face, error) {
