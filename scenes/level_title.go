@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const LevelTitleDelay = time.Second
+
 type levelTitleScene struct {
 	levelIndex int
 	levelText  *text.Text
@@ -51,6 +53,6 @@ func TitleScene(index int) Scene {
 		levelIndex: index,
 		levelText:  levelText,
 		titleText:  titleText,
-		nextTimer:  time.NewTimer(4 * time.Second),
+		nextTimer:  time.NewTimer(LevelTitleDelay),
 	}
 }
