@@ -22,8 +22,8 @@ const (
 	CollisionTypeShip
 )
 
-var shipPoints = []pixel.Vec{{-12, -20}, {12, -20}, {0, 40}}
-var cpShipPoints = []cp.Vector{{-12, -20}, {12, -20}, {0, 40}}
+var shipPoints = []pixel.Vec{{-12, -12}, {0, 24}, {12, -12}}
+var cpShipPoints = []cp.Vector{{-12, -12}, {0, 24}, {12, -12}}
 
 type ship struct {
 	body     *cp.Body
@@ -47,10 +47,9 @@ func (s *ship) seek(target cp.Vector) cp.Vector {
 
 func (s *ship) draw(canvas *pixelgl.Canvas, imd *imdraw.IMDraw) {
 	imd.Color = colornames.White
-	centroid := pixel.Vec(s.body.CenterOfGravity().Add(s.body))
+	centroid := pixel.Vec(s.body.Position())
 	for _, p := range shipPoints {
-		//imd.Push(p.Add(pixel.Vec(s.body.Position())))
-		imd.Push(p.Rotated(s.body.Angle()).Add(pixel.Vec(s.body.Position())))
+		imd.Push(centroid.Add(p.Rotated(s.body.Angle())))
 	}
 	imd.Polygon(2)
 	s.label.Draw(canvas, pixel.IM.Moved(pixel.Vec(s.body.Position()).Sub(pixel.V(0, 50)).Sub(s.label.Bounds().Center())))
@@ -59,7 +58,7 @@ func (s *ship) draw(canvas *pixelgl.Canvas, imd *imdraw.IMDraw) {
 func newShip(space *cp.Space, name string, health int) *ship {
 	var ship ship
 	body := space.AddBody(cp.NewBody(1, cp.MomentForPoly(1, len(cpShipPoints), cpShipPoints, cp.Vector{}, 1)))
-	shape := body.AddShape(cp.NewPolyShape(body, len(cpShipPoints), cpShipPoints, cp.NewTransformIdentity(), 1))
+	shape := space.AddShape(cp.NewPolyShape(body, len(cpShipPoints), cpShipPoints, cp.NewTransformIdentity(), 1))
 	if name == "" {
 		shape.SetCollisionType(CollisionTypePlayer | CollisionTypeShip)
 		shape.SetFilter(cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypePlayer|CollisionTypeShip), uint(CollisionTypeEnemy|CollisionTypeWall)))
@@ -90,8 +89,8 @@ func (b *bullet) draw(imd *imdraw.IMDraw) {
 
 func newBullet(space *cp.Space, player bool) *bullet {
 	var bullet bullet
-	body := space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{}, )))
-	shape := body.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
+	body := space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{})))
+	shape := space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
 	if player {
 		shape.SetCollisionType(CollisionTypePlayer | CollisionTypeBullet)
 		shape.SetFilter(cp.NewShapeFilter(0, uint(CollisionTypePlayer|CollisionTypeBullet), uint(CollisionTypeEnemy|CollisionTypeWall)))
@@ -184,7 +183,9 @@ func (s *LevelScene) Render(win *pixelgl.Window, canvas *pixelgl.Canvas) {
 			b.body.SetAngle(s.enemies[i].body.Angle())
 			b.body.ApplyForceAtLocalPoint(cp.Vector{Y: 500}, cp.Vector{})
 			s.bullets = append(s.bullets, b)
+			s.enemies[i].lastShot = now
 		}
+
 		s.enemies[i].draw(canvas, s.imd)
 	}
 	s.imd.Color = colornames.Red
@@ -192,6 +193,7 @@ func (s *LevelScene) Render(win *pixelgl.Window, canvas *pixelgl.Canvas) {
 	s.imd.Circle(5, 0)
 	s.imd.Draw(canvas)
 }
+
 func (s *LevelScene) handleShipBulletCollision(arb *cp.Arbiter, space *cp.Space, userData interface{}) bool {
 	shipBody, bulletBody := arb.Bodies()
 	ship := shipBody.UserData.(*ship)
@@ -211,7 +213,7 @@ func Level(index int) Scene {
 	sides := []cp.Vector{
 		{X: -1920 / 2, Y: -1080 / 2}, {X: -1920 / 2, Y: 1080 / 2},
 		{X: 1920 / 2, Y: -1080 / 2}, {X: 1920 / 2, Y: 1080 / 2},
-		{X: - 1920 / 2, Y: -1080 / 2}, {X: 1920 / 2, Y: -1080 / 2},
+		{X: -1920 / 2, Y: -1080 / 2}, {X: 1920 / 2, Y: -1080 / 2},
 		{X: -1920 / 2, Y: 1080 / 2}, {X: 1920 / 2, Y: 1080 / 2},
 	}
 	wallFilter := cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeWall), uint(CollisionTypeShip|CollisionTypeBullet))
@@ -232,6 +234,10 @@ func Level(index int) Scene {
 		player:     newShip(space, "", 100),
 	}
 
+	handleCollision := space.NewWildcardCollisionHandler(cp.WILDCARD_COLLISION_TYPE)
+	handleCollision.BeginFunc = func(arb *cp.Arbiter, space *cp.Space, userData interface{}) bool {
+		return true
+	}
 	//shipBulletHandler := space.NewCollisionHandler(CollisionTypeShip, CollisionTypeBullet)
 	//shipBulletHandler.BeginFunc = scene.handleShipBulletCollision
 

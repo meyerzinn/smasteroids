@@ -23,7 +23,7 @@ var (
 	FontTitle     *text.Atlas
 	FontInterface *text.Atlas
 	FontSubtitle  *text.Atlas
-	FontLabel *text.Atlas
+	FontLabel     *text.Atlas
 )
 
 func init() {
