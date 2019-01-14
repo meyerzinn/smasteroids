@@ -9,7 +9,6 @@ require (
 	github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a // indirect
 	github.com/gobuffalo/packr v1.21.9
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/jakecoffman/cp v0.1.0
 	github.com/pkg/errors v0.8.1
 	golang.org/x/image v0.0.0-20181116024801-cd38e8056d9b
 )
