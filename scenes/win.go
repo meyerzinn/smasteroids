@@ -40,7 +40,6 @@ func (s *WinScene) Render(win *pixelgl.Window) {
 	s.canvas.Clear(colornames.Black)
 	// show the game title
 	bounds := s.titleMessage.Bounds()
-	//matrix := pixel.IM.Moved(canvas.Bounds().Center().ScaledXY(pixel.V(.5, 2.0/3.0)).Sub(bounds.Center()))
 	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*2/3)).Sub(bounds.Center()))
 	s.titleMessage.Draw(s.canvas, matrix)
 	// show the footer message
