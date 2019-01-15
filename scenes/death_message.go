@@ -23,9 +23,10 @@ type deathMessageScene struct {
 }
 
 func (s *deathMessageScene) Render(win *pixelgl.Window) {
-	if win.Pressed(pixelgl.KeySpace) {
+	if win.Pressed(pixelgl.KeyEnter) {
 		s.Destroy()
-		Current = Start()
+		Current = TitleScene(s.level)
+		return
 	}
 
 	// make the footer blink
@@ -72,7 +73,7 @@ func Death(index int) Scene {
 	}
 
 	footerMessage := text.New(pixel.ZV, assets.FontInterface)
-	_, _ = footerMessage.WriteString("Press [SPACE] to continue.")
+	_, _ = footerMessage.WriteString("Press [ENTER] to continue.")
 	footerBlinkTicker := time.NewTicker(time.Second)
 	var footerActive atomic.Value
 	footerActive.Store(true)

@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const footerMessageText = "Press [SPACE] to start."
+const footerMessageText = "Press [ENTER] to start."
 
 type MainscreenScene struct {
 	titleMessage      *text.Text
@@ -24,7 +24,7 @@ type MainscreenScene struct {
 }
 
 func (s *MainscreenScene) Render(win *pixelgl.Window) {
-	if win.Pressed(pixelgl.KeySpace) {
+	if win.Pressed(pixelgl.KeyEnter) {
 		s.Destroy()
 		Current = Play()
 	}

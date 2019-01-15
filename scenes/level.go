@@ -20,11 +20,6 @@ const (
 	CollisionTypeWall
 )
 
-//const (
-//	ShipThrustForce = 100
-//	ShipTurnSpeed   = 3
-//)
-
 // Convert pixel Vector to chipmunk Vector
 func p2cp(v pixel.Vec) cp.Vector {
 	return cp.Vector(v)
@@ -193,7 +188,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 					ship.ticksSinceFire = 0
 				}
 			} else {
-				if (win.Pressed(pixelgl.KeySpace)) && ship.ticksSinceFire > 20 {
+				if (win.Pressed(pixelgl.KeySpace) || win.Pressed(pixelgl.KeyEnter)) && ship.ticksSinceFire > 20 {
 					s.bullets = append(s.bullets, s.newBullet(ship, s.level.BulletDamage, 100, false))
 					ship.ticksSinceFire = 0
 				}
@@ -212,7 +207,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			}
 			ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
 			s.label.Clear()
-			s.label.WriteString(ship.name)
+			_, _ = s.label.WriteString(ship.name)
 			s.label.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 30)).Sub(s.label.Bounds().Center())))
 
 			s.healthCanvas.Clear(colornames.Black)
@@ -346,10 +341,6 @@ func wrap(pos cp.Vector) cp.Vector {
 	}
 	return pos
 }
-
-//func newShip(space *cp.Space, ) *Ship {
-//
-//}
 
 func max(a, b int) int {
 	if a > b {
