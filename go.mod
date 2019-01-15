@@ -1,4 +1,4 @@
-module github.com/meyerzinn/smasteroids
+module gitlab.com/meyerzinn/smasteroids
 
 require (
 	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect

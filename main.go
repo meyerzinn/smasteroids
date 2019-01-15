@@ -3,9 +3,8 @@ package main
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/meyerzinn/smasteroids/scenes"
+	"gitlab.com/meyerzinn/smasteroids/scenes"
 	"golang.org/x/image/colornames"
-	_ "image/png"
 	"math"
 	"math/rand"
 	"time"
