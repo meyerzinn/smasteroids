@@ -192,7 +192,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 					ship.ticksSinceFire = 0
 				}
 			} else {
-				if (win.Pressed(pixelgl.KeySpace)) && ship.ticksSinceFire > 30 {
+				if (win.Pressed(pixelgl.KeySpace)) && ship.ticksSinceFire > 20 {
 					s.bullets = append(s.bullets, s.newBullet(ship, 20, 100, false))
 					ship.ticksSinceFire = 0
 				}
@@ -318,7 +318,7 @@ func PlayLevel(index int) *LevelScene {
 	// initialize ships
 	leveldata := assets.Levels[index]
 
-	scene.player = scene.newShip(Health(float64(leveldata.Difficulty)*float64(2)), "Student", false)
+	scene.player = scene.newShip(Health(float64(leveldata.Difficulty)*float64(4)), "Student", false)
 	scene.ships = append(scene.ships, scene.player)
 
 	for _, t := range leveldata.Teachers {
