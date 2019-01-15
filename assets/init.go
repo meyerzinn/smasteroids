@@ -67,7 +67,7 @@ func init() {
 		panic(errors.Wrap(err, "parsing levels from JSON"))
 	}
 	for i, l := range Levels {
-		l.Number = i + 1
+		l.Index = i
 		Levels[i] = l
 	}
 

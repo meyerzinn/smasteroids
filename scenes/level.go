@@ -7,6 +7,7 @@ import (
 	"github.com/faiface/pixel/text"
 	"github.com/jakecoffman/cp"
 	"github.com/meyerzinn/smasteroids/assets"
+	"github.com/meyerzinn/smasteroids/game"
 	"golang.org/x/image/colornames"
 	"math"
 	"math/rand"
@@ -19,10 +20,10 @@ const (
 	CollisionTypeWall
 )
 
-const (
-	ShipThrustForce = 100
-	ShipTurnSpeed   = 3
-)
+//const (
+//	ShipThrustForce = 100
+//	ShipTurnSpeed   = 3
+//)
 
 // Convert pixel Vector to chipmunk Vector
 func p2cp(v pixel.Vec) cp.Vector {
@@ -81,7 +82,7 @@ type Bullet struct {
 	alive  int
 }
 
-func (s *LevelScene) newBullet(parent *Ship, health float32, ttl int, enemy bool) *Bullet {
+func (s *LevelScene) newBullet(parent *Ship, health Health, ttl int, enemy bool) *Bullet {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{})))
 	bulletShape := s.space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
 	if enemy {
@@ -99,7 +100,7 @@ func (s *LevelScene) newBullet(parent *Ship, health float32, ttl int, enemy bool
 	bullet := &Bullet{
 		body:   body,
 		sprite: pixel.NewSprite(s.bulletSpriteCanvas, s.bulletSpriteCanvas.Bounds()),
-		health: Health(health),
+		health: health,
 		alive:  ttl,
 	}
 	body.UserData = &bullet.health
@@ -107,7 +108,7 @@ func (s *LevelScene) newBullet(parent *Ship, health float32, ttl int, enemy bool
 }
 
 type LevelScene struct {
-	levelIndex         int
+	level              game.Level
 	space              *cp.Space
 	player             *Ship
 	playerTarget       cp.Vector
@@ -152,14 +153,14 @@ func (s *LevelScene) deleteBullet(i int) {
 
 func (s *LevelScene) Render(win *pixelgl.Window) {
 	if s.player == nil { // player dead
-		Current = Death()
+		Current = Death(s.level.Index)
 		return
 	}
 	if len(s.ships) == 1 { // all enemies dead
-		if s.levelIndex == len(assets.Levels)-1 {
+		if s.level.Index == len(assets.Levels)-1 {
 			Current = Win()
 		} else {
-			Current = TitleScene(s.levelIndex + 1)
+			Current = TitleScene(s.level.Index + 1)
 			return
 		}
 	}
@@ -185,26 +186,28 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			ship.ticksSinceFire++
 			if ship != s.player {
 				angle := s.playerTarget.Sub(ship.body.Position()).Normalize().ToAngle() - math.Pi/2
-				ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, ShipTurnSpeed*dt))
-				ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: ShipThrustForce}, cp.Vector{})
+				ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, s.level.EnemySteerSpeed*dt))
+				ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: s.level.EnemyThrustForce}, cp.Vector{})
 				if ship.ticksSinceFire > 30 {
-					s.bullets = append(s.bullets, s.newBullet(ship, 20, 100, true))
+					s.bullets = append(s.bullets, s.newBullet(ship, s.level.BulletDamage, 100, true))
 					ship.ticksSinceFire = 0
 				}
 			} else {
 				if (win.Pressed(pixelgl.KeySpace)) && ship.ticksSinceFire > 20 {
-					s.bullets = append(s.bullets, s.newBullet(ship, 20, 100, false))
+					s.bullets = append(s.bullets, s.newBullet(ship, s.level.BulletDamage, 100, false))
 					ship.ticksSinceFire = 0
 				}
 				if win.Pressed(pixelgl.KeyW) || win.Pressed(pixelgl.KeyUp) {
-					ship.body.ApplyForceAtLocalPoint(cp.Vector{0, 1.5 * ShipThrustForce}, cp.Vector{})
+					ship.body.ApplyForceAtLocalPoint(cp.Vector{0, 1.5 * s.level.EnemyThrustForce}, cp.Vector{})
 				}
 				if win.Pressed(pixelgl.KeyA) || win.Pressed(pixelgl.KeyLeft) {
 					if !win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
-						ship.body.SetAngularVelocity(ShipTurnSpeed*3/4)
+						ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 3, 4*dt))
 					}
 				} else if win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
-					ship.body.SetAngularVelocity(-ShipTurnSpeed*3/4)
+					ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), -3, 4*dt))
+				} else {
+					ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 4*dt))
 				}
 			}
 			ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
@@ -241,11 +244,11 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	Draw(win, s.canvas)
 }
 
-type Health float32
+type Health = game.Health
 
 func PlayLevel(index int) *LevelScene {
 	var scene LevelScene
-	scene.levelIndex = index
+	scene.level = assets.Levels[index]
 	// initialize graphics
 	scene.imd = imdraw.New(nil)
 	scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
@@ -318,12 +321,12 @@ func PlayLevel(index int) *LevelScene {
 	// initialize ships
 	leveldata := assets.Levels[index]
 
-	scene.player = scene.newShip(Health(float64(leveldata.Difficulty)*float64(4)), "Student", false)
+	scene.player = scene.newShip(leveldata.PlayerHealth, "Student", false)
 	scene.ships = append(scene.ships, scene.player)
 
 	for _, t := range leveldata.Teachers {
 		teacher := assets.Teachers[t]
-		scene.ships = append(scene.ships, scene.newShip(Health(leveldata.Difficulty), teacher, true))
+		scene.ships = append(scene.ships, scene.newShip(leveldata.EnemyHealth, teacher, true))
 	}
 
 	scene.label = text.New(pixel.ZV, assets.FontLabel)

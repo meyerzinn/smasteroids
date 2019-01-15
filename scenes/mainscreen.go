@@ -5,7 +5,9 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"github.com/meyerzinn/smasteroids/assets"
+	"github.com/meyerzinn/smasteroids/game"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/basicfont"
 	"sync/atomic"
 	"time"
 )
@@ -13,8 +15,8 @@ import (
 const footerMessageText = "Press [SPACE] to start."
 
 type MainscreenScene struct {
-	titleMessage *text.Text
-
+	titleMessage      *text.Text
+	versionMessage    *text.Text
 	footerMessage     *text.Text
 	footerBlinkTicker *time.Ticker
 	footerActive      atomic.Value
@@ -49,6 +51,9 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/3)).Sub(bounds.Center()))
 		s.footerMessage.Draw(s.canvas, matrix)
 	}
+
+	s.versionMessage.Draw(s.canvas, pixel.IM.Moved(CanvasBounds.Min).Moved(pixel.V(4, 4)))
+
 	Draw(win, s.canvas)
 }
 
@@ -65,8 +70,12 @@ func Start() Scene {
 	footerBlinkTicker := time.NewTicker(time.Second)
 	var footerActive atomic.Value
 	footerActive.Store(true)
+
+	versionMessage := text.New(pixel.ZV, text.NewAtlas(basicfont.Face7x13, text.ASCII))
+	_, _ = versionMessage.WriteString("Version " + game.Version() + ".")
 	return &MainscreenScene{
 		titleMessage:      titleMessage,
+		versionMessage:    versionMessage,
 		footerMessage:     footerMessage,
 		footerBlinkTicker: footerBlinkTicker,
 		footerActive:      footerActive,

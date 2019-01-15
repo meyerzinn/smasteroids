@@ -47,7 +47,7 @@ func Play() Scene {
 func TitleScene(index int) Scene {
 	level := assets.Levels[index]
 	levelText := text.New(pixel.ZV, assets.FontSubtitle)
-	_, _ = levelText.WriteString("Level " + strconv.Itoa(level.Number) + ":")
+	_, _ = levelText.WriteString("Level " + strconv.Itoa(level.Index+1) + ":")
 	titleText := text.New(pixel.ZV, assets.FontTitle)
 	titleText.Color = colornames.Yellow
 	_, _ = titleText.WriteString(level.Name)

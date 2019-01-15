@@ -1,7 +1,11 @@
 [
   {
     "name": "Lower School",
-    "difficulty": 10,
+    "bullet_damage": 5.0,
+    "enemy_health": 10.0,
+    "enemy_steer_speed": 2.0,
+    "enemy_thrust_force": 100.0,
+    "player_health": 30.0,
     "teachers": [
       "carrio",
       "materre",
@@ -11,7 +15,11 @@
   },
   {
     "name": "Middle School",
-    "difficulty": 50,
+    "bullet_damage": 5,
+    "enemy_health": 20,
+    "enemy_steer_speed": 3.25,
+    "enemy_thrust_force": 100,
+    "player_health": 40,
     "teachers": [
       "dillon",
       "hoehn",
@@ -21,7 +29,11 @@
   },
   {
     "name": "The Biologists",
-    "difficulty": 75,
+    "bullet_damage": 5,
+    "enemy_health": 40,
+    "enemy_steer_speed": 3.5,
+    "enemy_thrust_force": 110,
+    "player_health": 60,
     "teachers": [
       "flint",
       "israni",
@@ -30,7 +42,11 @@
   },
   {
     "name": "The Chemists",
-    "difficulty": 100,
+    "bullet_damage": 7.5,
+    "enemy_health": 50,
+    "enemy_steer_speed": 3.75,
+    "enemy_thrust_force": 120,
+    "player_health": 60,
     "teachers": [
       "macaraeg",
       "owens"
@@ -38,7 +54,11 @@
   },
   {
     "name": "The Physicists",
-    "difficulty": 200,
+    "bullet_damage": 10,
+    "enemy_health": 60,
+    "enemy_steer_speed": 4,
+    "enemy_thrust_force": 130,
+    "player_health": 125,
     "teachers": [
       "houpt",
       "hoehn",
@@ -48,7 +68,11 @@
   },
   {
     "name": "The Lorax",
-    "difficulty": 400,
+    "bullet_damage": 20,
+    "enemy_health": 200,
+    "enemy_steer_speed": 5,
+    "enemy_thrust_force": 150,
+    "player_health": 125,
     "teachers": [
       "northcut"
     ]

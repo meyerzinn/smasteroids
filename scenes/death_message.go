@@ -15,6 +15,7 @@ import (
 type deathMessageScene struct {
 	text   *text.Text
 	canvas *pixelgl.Canvas
+	level  int
 
 	footerMessage     *text.Text
 	footerBlinkTicker *time.Ticker
@@ -55,7 +56,7 @@ func (s *deathMessageScene) Destroy() {
 	s.footerBlinkTicker.Stop()
 }
 
-func Death() Scene {
+func Death(index int) Scene {
 	var teacher, quote string
 	for t, quotes := range assets.DeathMessages { // take advantage of Go's guaranteed random ranging
 		teacher = t
@@ -77,6 +78,7 @@ func Death() Scene {
 	footerActive.Store(true)
 	return &deathMessageScene{
 		text:              txt,
+		level:             index,
 		canvas:            pixelgl.NewCanvas(CanvasBounds),
 		footerMessage:     footerMessage,
 		footerBlinkTicker: footerBlinkTicker,
