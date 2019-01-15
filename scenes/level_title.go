@@ -4,38 +4,40 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
-	"github.com/meyerzinn/smastroids/assets"
+	"github.com/meyerzinn/smasteroids/assets"
 	"golang.org/x/image/colornames"
 	"strconv"
 	"time"
 )
 
-const LevelTitleDelay = time.Second
+const LevelTitleDelay = 4 * time.Second
 
-type levelTitleScene struct {
+type LevelTitleScene struct {
 	levelIndex int
 	levelText  *text.Text
 	titleText  *text.Text
 	nextTimer  *time.Timer
+	canvas     *pixelgl.Canvas
 }
 
-func (s *levelTitleScene) Render(win *pixelgl.Window, canvas *pixelgl.Canvas) {
+func (s *LevelTitleScene) Render(win *pixelgl.Window) {
 	select {
 	case <-s.nextTimer.C:
-		Current = Level(s.levelIndex)
+		Current = PlayLevel(s.levelIndex)
 		return
 	default:
 	}
-	canvas.Clear(colornames.Black)
+	s.canvas.Clear(colornames.Black)
 	bounds := s.levelText.Bounds()
-	matrix := pixel.IM.Moved(canvas.Bounds().Min.Add(pixel.V(canvas.Bounds().W()/2, canvas.Bounds().H()*5/9)).Sub(bounds.Center()))
-	s.levelText.Draw(canvas, matrix)
+	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*5/9)).Sub(bounds.Center()))
+	s.levelText.Draw(s.canvas, matrix)
 	bounds = s.titleText.Bounds()
-	matrix = pixel.IM.Moved(canvas.Bounds().Min.Add(pixel.V(canvas.Bounds().W()/2, canvas.Bounds().H()*4/9)).Sub(bounds.Center()))
-	s.titleText.Draw(canvas, matrix)
+	matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/9)).Sub(bounds.Center()))
+	s.titleText.Draw(s.canvas, matrix)
+	Draw(win, s.canvas)
 }
 
-func (s *levelTitleScene) Destroy() {
+func (s *LevelTitleScene) Destroy() {
 }
 
 func Play() Scene {
@@ -49,10 +51,11 @@ func TitleScene(index int) Scene {
 	titleText := text.New(pixel.ZV, assets.FontTitle)
 	titleText.Color = colornames.Yellow
 	_, _ = titleText.WriteString(level.Name)
-	return &levelTitleScene{
+	return &LevelTitleScene{
 		levelIndex: index,
 		levelText:  levelText,
 		titleText:  titleText,
 		nextTimer:  time.NewTimer(LevelTitleDelay),
+		canvas:     pixelgl.NewCanvas(CanvasBounds),
 	}
 }

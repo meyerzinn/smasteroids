@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/meyerzinn/smastroids/scenes"
+	"github.com/meyerzinn/smasteroids/scenes"
 	"golang.org/x/image/colornames"
 	_ "image/png"
 	"math"
@@ -17,29 +17,24 @@ func run() {
 		Title:     "SMasteroids",
 		Bounds:    pixel.R(0, 0, width, height),
 		VSync:     true,
-		Resizable: true,
-		//Monitor: primaryMonitor,
+		//Resizable: true,
+		Monitor: primaryMonitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
 	if err != nil {
 		panic(err)
 	}
+	scenes.CanvasBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
 	CenterWindow(win)
 	//win.SetMatrix(pixel.IM.Scaled(win.Bounds().Center(), width/1024.0))
-	canvas := pixelgl.NewCanvas(pixel.R(-1920/2, -1080/2, 1920/2, 1080/2))
 	scenes.Current = scenes.Start()
 	tickDuration := time.Duration(math.Floor((1.0/primaryMonitor.RefreshRate())*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)
 	defer ticker.Stop()
 	for !win.Closed() {
 		win.Clear(colornames.Black)
-		scenes.Current.Render(win, canvas)
-		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, math.Min(
-			win.Bounds().W()/canvas.Bounds().W(),
-			win.Bounds().H()/canvas.Bounds().H(),
-		)).Moved(win.Bounds().Center()))
-		canvas.Draw(win, pixel.IM.Moved(canvas.Bounds().Center()))
+		scenes.Current.Render(win)
 		if win.Pressed(pixelgl.KeyEscape) {
 			win.SetClosed(true)
 		}

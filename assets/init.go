@@ -7,7 +7,7 @@ import (
 	"github.com/faiface/pixel/text"
 	"github.com/gobuffalo/packr"
 	"github.com/golang/freetype/truetype"
-	"github.com/meyerzinn/smastroids/game"
+	"github.com/meyerzinn/smasteroids/game"
 	"github.com/pkg/errors"
 	"golang.org/x/image/font"
 	"image"
