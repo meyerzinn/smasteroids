@@ -11,12 +11,10 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/image/font"
 	"image"
-	_ "image/png"
-	"path"
 )
 
 var (
-	Teachers      map[string]game.TeacherData
+	Teachers      map[string]string // last : Full
 	DeathMessages map[string][]string
 	Levels        []game.Level
 
@@ -34,20 +32,19 @@ func init() {
 	if err != nil {
 		panic(errors.Wrap(err, "loading teachers.json"))
 	}
-	var names map[string]string
-	err = json.Unmarshal(teachersRaw, &names)
+	err = json.Unmarshal(teachersRaw, &Teachers)
 	if err != nil {
 		panic(errors.Wrap(err, "parsing teachers from JSON"))
 	}
-	Teachers = make(map[string]game.TeacherData, len(names))
-	for last, full := range names {
-		filepath := path.Join("images", last+".png")
-		picture, err := loadPicture(assets, filepath)
-		if err != nil {
-			panic(errors.Wrapf(err, "loading image for teacher %s (file %s)", last, filepath))
-		}
-		Teachers[last] = game.TeacherData{Name: full, Image: picture}
-	}
+	//Teachers = make(map[string]string, len(names))
+	//for last, full := range names {
+	//	filepath := path.Join("images", last+".png")
+	//	picture, err := loadPicture(assets, filepath)
+	//	if err != nil {
+	//		panic(errors.Wrapf(err, "loading image for teacher %s (file %s)", last, filepath))
+	//	}
+	//	Teachers[last] = game.TeacherData{Name: full, Image: picture}
+	//}
 
 	// load death messages
 	deathMessagesRaw, err := assets.Find("death_messages.json")

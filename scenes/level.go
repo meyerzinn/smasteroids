@@ -21,7 +21,7 @@ const (
 
 const (
 	ShipThrustForce = 100
-	ShipTurnSpeed   = 2
+	ShipTurnSpeed   = 3
 )
 
 // Convert pixel Vector to chipmunk Vector
@@ -201,10 +201,10 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 				}
 				if win.Pressed(pixelgl.KeyA) || win.Pressed(pixelgl.KeyLeft) {
 					if !win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
-						ship.body.SetAngularVelocity(ShipTurnSpeed / 2)
+						ship.body.SetAngularVelocity(ShipTurnSpeed*3/4)
 					}
 				} else if win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
-					ship.body.SetAngularVelocity(-ShipTurnSpeed / 2)
+					ship.body.SetAngularVelocity(-ShipTurnSpeed*3/4)
 				}
 			}
 			ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
@@ -227,12 +227,6 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
 		}
 	}
-
-	//s.imd.Clear()
-	//s.imd.Color = colornames.Red
-	//s.imd.Push(cp2p(s.playerTarget))
-	//s.imd.Circle(2, 0)
-	//s.imd.Draw(s.canvas)
 
 	for i := len(s.bullets) - 1; i >= 0; i-- {
 		bullet := s.bullets[i]
@@ -288,10 +282,6 @@ func PlayLevel(index int) *LevelScene {
 		{hw, -hh}, {hw, hh},
 		{-hw, -hh}, {hw, -hh},
 		{-hw, hh}, {hw, hh},
-		//p2cp(CanvasBounds.Min), {CanvasBounds.Min.X, CanvasBounds.Max.Y},
-		//{CanvasBounds.Max.X, CanvasBounds.Min.Y}, p2cp(CanvasBounds.Max),
-		//p2cp(CanvasBounds.Min), {CanvasBounds.Max.X, CanvasBounds.Min.Y},
-		//{CanvasBounds.Min.X, CanvasBounds.Max.Y}, p2cp(CanvasBounds.Max),
 	}
 
 	for i := 0; i < len(sides); i += 2 {
@@ -328,12 +318,12 @@ func PlayLevel(index int) *LevelScene {
 	// initialize ships
 	leveldata := assets.Levels[index]
 
-	scene.player = scene.newShip(Health(float64(leveldata.Difficulty)*float64(1.5)), "Student", false)
+	scene.player = scene.newShip(Health(float64(leveldata.Difficulty)*float64(2)), "Student", false)
 	scene.ships = append(scene.ships, scene.player)
 
 	for _, t := range leveldata.Teachers {
 		teacher := assets.Teachers[t]
-		scene.ships = append(scene.ships, scene.newShip(Health(leveldata.Difficulty), teacher.Name, true))
+		scene.ships = append(scene.ships, scene.newShip(Health(leveldata.Difficulty), teacher, true))
 	}
 
 	scene.label = text.New(pixel.ZV, assets.FontLabel)

@@ -7,16 +7,21 @@ import (
 	"golang.org/x/image/colornames"
 	_ "image/png"
 	"math"
+	"math/rand"
 	"time"
 )
+
+func init() {
+	rand.Seed(int64(time.Now().Nanosecond()))
+}
 
 func run() {
 	primaryMonitor := pixelgl.PrimaryMonitor()
 	width, height := primaryMonitor.Size()
 	cfg := pixelgl.WindowConfig{
-		Title:     "SMasteroids",
-		Bounds:    pixel.R(0, 0, width, height),
-		VSync:     true,
+		Title:  "SMasteroids",
+		Bounds: pixel.R(0, 0, width, height),
+		VSync:  true,
 		//Resizable: true,
 		Monitor: primaryMonitor,
 	}

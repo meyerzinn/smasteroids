@@ -62,7 +62,7 @@ func Death() Scene {
 		quote = quotes[rand.Intn(len(quotes))]
 		break
 	}
-	name := assets.Teachers[teacher].Name
+	name := assets.Teachers[teacher]
 	lines := []string{quote, "- " + name}
 	txt := text.New(pixel.ZV, assets.FontInterface)
 	for _, line := range lines {
