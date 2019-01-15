@@ -38,6 +38,7 @@
   },
   {
     "name": "The Physicists",
+    "difficulty": 200,
     "teachers": [
       "houpt",
       "hoehn",

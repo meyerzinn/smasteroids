@@ -157,7 +157,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	}
 	if len(s.ships) == 1 { // all enemies dead
 		if s.levelIndex == len(assets.Levels)-1 {
-			panic("you won")
+			Current = Win()
 		} else {
 			Current = TitleScene(s.levelIndex + 1)
 			return
@@ -187,28 +187,26 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 				angle := s.playerTarget.Sub(ship.body.Position()).Normalize().ToAngle() - math.Pi/2
 				ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, ShipTurnSpeed*dt))
 				ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: ShipThrustForce}, cp.Vector{})
-				//ship.body.SetAngle(ship.body.Velocity().ToAngle())
 				if ship.ticksSinceFire > 30 {
 					s.bullets = append(s.bullets, s.newBullet(ship, 20, 100, true))
 					ship.ticksSinceFire = 0
 				}
 			} else {
-				if win.Pressed(pixelgl.KeySpace) && ship.ticksSinceFire > 30 {
+				if (win.Pressed(pixelgl.KeySpace)) && ship.ticksSinceFire > 30 {
 					s.bullets = append(s.bullets, s.newBullet(ship, 20, 100, false))
 					ship.ticksSinceFire = 0
 				}
-				if win.Pressed(pixelgl.KeyW) {
+				if win.Pressed(pixelgl.KeyW) || win.Pressed(pixelgl.KeyUp) {
 					ship.body.ApplyForceAtLocalPoint(cp.Vector{0, 1.5 * ShipThrustForce}, cp.Vector{})
 				}
-				if win.Pressed(pixelgl.KeyA) {
-					if !win.Pressed(pixelgl.KeyD) {
+				if win.Pressed(pixelgl.KeyA) || win.Pressed(pixelgl.KeyLeft) {
+					if !win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
 						ship.body.SetAngularVelocity(ShipTurnSpeed / 2)
 					}
-				} else if win.Pressed(pixelgl.KeyD) {
+				} else if win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
 					ship.body.SetAngularVelocity(-ShipTurnSpeed / 2)
 				}
 			}
-			// todo write label
 			ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
 			s.label.Clear()
 			s.label.WriteString(ship.name)
@@ -328,10 +326,11 @@ func PlayLevel(index int) *LevelScene {
 	}
 
 	// initialize ships
-	scene.player = scene.newShip(100, "", false)
+	leveldata := assets.Levels[index]
+
+	scene.player = scene.newShip(Health(float64(leveldata.Difficulty)*float64(1.5)), "Student", false)
 	scene.ships = append(scene.ships, scene.player)
 
-	leveldata := assets.Levels[index]
 	for _, t := range leveldata.Teachers {
 		teacher := assets.Teachers[t]
 		scene.ships = append(scene.ships, scene.newShip(Health(leveldata.Difficulty), teacher.Name, true))
