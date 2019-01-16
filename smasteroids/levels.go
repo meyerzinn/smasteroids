@@ -30,18 +30,18 @@ type Level struct {
 
 var lowerSchoolEnemy = Ship{
 	Health:       10,
-	Thrust:       75,
-	Turn:         2.25,
+	Thrust:       50,
+	Turn:         2,
 	Fire:         30,
-	BulletDamage: 5,
+	BulletDamage: 2,
 }
 
 var middleSchoolEnemy = Ship{
 	Health:       15,
-	Thrust:       100,
-	Turn:         3,
+	Thrust:       60,
+	Turn:         2.5,
 	Fire:         30,
-	BulletDamage: 5,
+	BulletDamage: 4,
 }
 
 var biologyEnemy = Ship{

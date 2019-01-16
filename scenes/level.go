@@ -69,7 +69,7 @@ func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 		//name:           name,
 		//ticksSinceFire: 0,
 	}
-	body.UserData = &ship.data.Health
+	body.UserData = &ship.health
 	return ship
 }
 
@@ -80,7 +80,7 @@ type Bullet struct {
 	alive  int
 }
 
-func (s *LevelScene) newBullet(parent *Ship, health float64, ttl int, enemy bool) *Bullet {
+func (s *LevelScene) newBullet(parent *Ship, ttl int, enemy bool) *Bullet {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{})))
 	bulletShape := s.space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
 	if enemy {
@@ -98,7 +98,7 @@ func (s *LevelScene) newBullet(parent *Ship, health float64, ttl int, enemy bool
 	bullet := &Bullet{
 		body:   body,
 		sprite: pixel.NewSprite(s.bulletSpriteCanvas, s.bulletSpriteCanvas.Bounds()),
-		health: health,
+		health: parent.data.BulletDamage,
 		alive:  ttl,
 	}
 	body.UserData = &bullet.health
@@ -180,7 +180,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	s.playerTarget = s.playerTarget.Lerp(s.player.body.Position().Add(s.player.body.Velocity()), .1)
 	for i := len(s.ships) - 1; i >= 0; i-- {
 		ship := s.ships[i]
-		if ship.health <= 0 {
+		if ship.health <= 0.0 {
 			s.deleteShip(i)
 		} else {
 			ship.ticksSinceFire++
@@ -189,7 +189,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 				ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, ship.data.Turn*dt))
 				ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: ship.data.Thrust}, cp.Vector{})
 				if ship.ticksSinceFire > ship.data.Fire {
-					s.bullets = append(s.bullets, s.newBullet(ship, ship.data.BulletDamage, 100, true))
+					s.bullets = append(s.bullets, s.newBullet(ship, 100, true))
 					ship.ticksSinceFire = 0
 				}
 				s.labelText.Clear()
@@ -198,7 +198,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 
 			} else {
 				if (win.Pressed(pixelgl.KeySpace) || win.Pressed(pixelgl.KeyEnter)) && ship.ticksSinceFire > 20 {
-					s.bullets = append(s.bullets, s.newBullet(ship, ship.data.BulletDamage, 100, false))
+					s.bullets = append(s.bullets, s.newBullet(ship, 100, false))
 					ship.ticksSinceFire = 0
 				}
 				if win.Pressed(pixelgl.KeyW) || win.Pressed(pixelgl.KeyUp) {
@@ -214,7 +214,10 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 					ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 4*dt))
 				}
 			}
+			// draw ship
 			ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
+
+			// draw health bar
 			s.healthCanvas.Clear(colornames.Black)
 			s.imd.Clear()
 			if ship.health > .5*ship.data.Health {
@@ -224,7 +227,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			} else {
 				s.imd.Color = colornames.Red
 			}
-			s.imd.Push(pixel.V(0, 0), pixel.V(float64(ship.health)/float64(ship.health)*64, 8))
+			s.imd.Push(pixel.V(0, 0), pixel.V(ship.health/ship.data.Health*64, 8))
 			s.imd.Rectangle(0)
 			s.imd.Draw(s.healthCanvas)
 			s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
