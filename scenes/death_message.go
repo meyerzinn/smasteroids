@@ -6,6 +6,7 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"gitlab.com/meyerzinn/smasteroids/assets"
+	"gitlab.com/meyerzinn/smasteroids/smasteroids"
 	"golang.org/x/image/colornames"
 	"math/rand"
 	"sync/atomic"
@@ -58,14 +59,13 @@ func (s *deathMessageScene) Destroy() {
 }
 
 func Death(index int) Scene {
-	var teacher, quote string
-	for t, quotes := range assets.DeathMessages { // take advantage of Go's guaranteed random ranging
-		teacher = t
+	var name, quote string
+	for n, quotes := range smasteroids.DeathMessages { // take advantage of Go's guaranteed random ranging
+		name = n
 		quote = quotes[rand.Intn(len(quotes))]
 		break
 	}
-	name := assets.Teachers[teacher]
-	lines := []string{quote, "- " + name}
+	lines := []string{`"` + quote + `"`, "- " + name}
 	txt := text.New(pixel.ZV, assets.FontInterface)
 	for _, line := range lines {
 		txt.Dot.X -= txt.BoundsOf(line).W()

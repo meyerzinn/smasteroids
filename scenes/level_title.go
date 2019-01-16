@@ -5,6 +5,7 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"gitlab.com/meyerzinn/smasteroids/assets"
+	"gitlab.com/meyerzinn/smasteroids/smasteroids"
 	"golang.org/x/image/colornames"
 	"strconv"
 	"time"
@@ -45,9 +46,9 @@ func Play() Scene {
 }
 
 func TitleScene(index int) Scene {
-	level := assets.Levels[index]
+	level := smasteroids.Levels[index]
 	levelText := text.New(pixel.ZV, assets.FontSubtitle)
-	_, _ = levelText.WriteString("Level " + strconv.Itoa(level.Index+1) + ":")
+	_, _ = levelText.WriteString("Level " + strconv.Itoa(index+1) + ":")
 	titleText := text.New(pixel.ZV, assets.FontTitle)
 	titleText.Color = colornames.Yellow
 	_, _ = titleText.WriteString(level.Name)

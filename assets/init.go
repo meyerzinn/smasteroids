@@ -2,22 +2,16 @@ package assets
 
 import (
 	"bytes"
-	"encoding/json"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/text"
 	"github.com/gobuffalo/packr"
 	"github.com/golang/freetype/truetype"
 	"github.com/pkg/errors"
-	"gitlab.com/meyerzinn/smasteroids/game"
 	"golang.org/x/image/font"
 	"image"
 )
 
 var (
-	Teachers      map[string]string // last : Full
-	DeathMessages map[string][]string
-	Levels        []game.Level
-
 	FontTitle     *text.Atlas
 	FontInterface *text.Atlas
 	FontSubtitle  *text.Atlas
@@ -26,50 +20,6 @@ var (
 
 func init() {
 	assets := packr.NewBox("./data")
-
-	// load teachers and associated images
-	teachersRaw, err := assets.Find("teachers.json")
-	if err != nil {
-		panic(errors.Wrap(err, "loading teachers.json"))
-	}
-	err = json.Unmarshal(teachersRaw, &Teachers)
-	if err != nil {
-		panic(errors.Wrap(err, "parsing teachers from JSON"))
-	}
-	//Teachers = make(map[string]string, len(names))
-	//for last, full := range names {
-	//	filepath := path.Join("images", last+".png")
-	//	picture, err := loadPicture(assets, filepath)
-	//	if err != nil {
-	//		panic(errors.Wrapf(err, "loading image for teacher %s (file %s)", last, filepath))
-	//	}
-	//	Teachers[last] = game.TeacherData{Name: full, Image: picture}
-	//}
-
-	// load death messages
-	deathMessagesRaw, err := assets.Find("death_messages.json")
-	if err != nil {
-		panic(errors.Wrap(err, "loading death messages"))
-	}
-	DeathMessages = make(map[string][]string)
-	err = json.Unmarshal(deathMessagesRaw, &DeathMessages)
-	if err != nil {
-		panic(errors.Wrap(err, "parsing death messages from JSON"))
-	}
-
-	// load levels
-	levelsRaw, err := assets.Find("levels.json")
-	if err != nil {
-		panic(errors.Wrap(err, "loading levels"))
-	}
-	err = json.Unmarshal(levelsRaw, &Levels)
-	if err != nil {
-		panic(errors.Wrap(err, "parsing levels from JSON"))
-	}
-	for i, l := range Levels {
-		l.Index = i
-		Levels[i] = l
-	}
 
 	// load fonts
 	ps2pRaw, err := assets.Find("fonts/PressStart2P.ttf")

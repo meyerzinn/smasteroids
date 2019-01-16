@@ -7,7 +7,7 @@ import (
 	"github.com/faiface/pixel/text"
 	"github.com/jakecoffman/cp"
 	"gitlab.com/meyerzinn/smasteroids/assets"
-	"gitlab.com/meyerzinn/smasteroids/game"
+	"gitlab.com/meyerzinn/smasteroids/smasteroids"
 	"golang.org/x/image/colornames"
 	"math"
 	"math/rand"
@@ -40,13 +40,15 @@ var shipVertices = []cp.Vector{{-12, -12}, {0, 24}, {12, -12}}
 type Ship struct {
 	body           *cp.Body
 	sprite         *pixel.Sprite
-	name           string
-	health         Health
-	maxHealth      Health
+	data           smasteroids.Ship
 	ticksSinceFire int
+	health         float64
+	//name           string
+	//health         Health
+	//health      Health
 }
 
-func (s *LevelScene) newShip(maxHealth Health, name string, enemy bool) *Ship {
+func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForPoly(1, len(shipVertices), shipVertices, cp.Vector{}, 1)))
 	shipShape := s.space.AddShape(cp.NewPolyShape(body, len(shipVertices), shipVertices, cp.NewTransformIdentity(), 1))
 	if enemy {
@@ -59,25 +61,26 @@ func (s *LevelScene) newShip(maxHealth Health, name string, enemy bool) *Ship {
 	}
 
 	ship := &Ship{
-		body:           body,
-		sprite:         pixel.NewSprite(s.shipSpriteCanvas, s.shipSpriteCanvas.Bounds()),
-		health:         maxHealth,
-		maxHealth:      maxHealth,
-		name:           name,
-		ticksSinceFire: 0,
+		body:   body,
+		sprite: pixel.NewSprite(s.shipSpriteCanvas, s.shipSpriteCanvas.Bounds()),
+		data:   data,
+		health: data.Health,
+		//health:      health,
+		//name:           name,
+		//ticksSinceFire: 0,
 	}
-	body.UserData = &ship.health
+	body.UserData = &ship.data.Health
 	return ship
 }
 
 type Bullet struct {
 	body   *cp.Body
 	sprite *pixel.Sprite
-	health Health
+	health float64
 	alive  int
 }
 
-func (s *LevelScene) newBullet(parent *Ship, health Health, ttl int, enemy bool) *Bullet {
+func (s *LevelScene) newBullet(parent *Ship, health float64, ttl int, enemy bool) *Bullet {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{})))
 	bulletShape := s.space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
 	if enemy {
@@ -91,7 +94,7 @@ func (s *LevelScene) newBullet(parent *Ship, health Health, ttl int, enemy bool)
 	body.SetVelocityVector(parent.body.Velocity())
 	body.SetAngle(parent.body.Angle())
 	body.SetAngularVelocity(parent.body.AngularVelocity())
-	body.ApplyForceAtLocalPoint(cp.Vector{0, 20000}, cp.Vector{})
+	body.ApplyForceAtLocalPoint(cp.Vector{Y: 20000}, cp.Vector{})
 	bullet := &Bullet{
 		body:   body,
 		sprite: pixel.NewSprite(s.bulletSpriteCanvas, s.bulletSpriteCanvas.Bounds()),
@@ -103,11 +106,13 @@ func (s *LevelScene) newBullet(parent *Ship, health Health, ttl int, enemy bool)
 }
 
 type LevelScene struct {
-	level              game.Level
+	level              smasteroids.Level
+	levelIndex         int
 	space              *cp.Space
 	player             *Ship
 	playerTarget       cp.Vector
 	ships              []*Ship
+	labels             map[*Ship]string
 	bullets            []*Bullet
 	lastTick           time.Time
 	canvas             *pixelgl.Canvas
@@ -115,7 +120,7 @@ type LevelScene struct {
 	shipSpriteCanvas   *pixelgl.Canvas
 	bulletSpriteCanvas *pixelgl.Canvas
 	imd                *imdraw.IMDraw
-	label              *text.Text
+	labelText          *text.Text
 }
 
 func (s *LevelScene) deleteShip(i int) {
@@ -148,14 +153,14 @@ func (s *LevelScene) deleteBullet(i int) {
 
 func (s *LevelScene) Render(win *pixelgl.Window) {
 	if s.player == nil { // player dead
-		Current = Death(s.level.Index)
+		Current = Death(s.levelIndex)
 		return
 	}
 	if len(s.ships) == 1 { // all enemies dead
-		if s.level.Index == len(assets.Levels)-1 {
+		if s.levelIndex == len(smasteroids.Levels)-1 {
 			Current = Win()
 		} else {
-			Current = TitleScene(s.level.Index + 1)
+			Current = TitleScene(s.levelIndex + 1)
 			return
 		}
 	}
@@ -181,19 +186,23 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			ship.ticksSinceFire++
 			if ship != s.player {
 				angle := s.playerTarget.Sub(ship.body.Position()).Normalize().ToAngle() - math.Pi/2
-				ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, s.level.EnemySteerSpeed*dt))
-				ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: s.level.EnemyThrustForce}, cp.Vector{})
-				if ship.ticksSinceFire > 30 {
-					s.bullets = append(s.bullets, s.newBullet(ship, s.level.BulletDamage, 100, true))
+				ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, ship.data.Turn*dt))
+				ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: ship.data.Thrust}, cp.Vector{})
+				if ship.ticksSinceFire > ship.data.Fire {
+					s.bullets = append(s.bullets, s.newBullet(ship, ship.data.BulletDamage, 100, true))
 					ship.ticksSinceFire = 0
 				}
+				s.labelText.Clear()
+				_, _ = s.labelText.WriteString(s.labels[ship])
+				s.labelText.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 30)).Sub(s.labelText.Bounds().Center())))
+
 			} else {
 				if (win.Pressed(pixelgl.KeySpace) || win.Pressed(pixelgl.KeyEnter)) && ship.ticksSinceFire > 20 {
-					s.bullets = append(s.bullets, s.newBullet(ship, s.level.BulletDamage, 100, false))
+					s.bullets = append(s.bullets, s.newBullet(ship, ship.data.BulletDamage, 100, false))
 					ship.ticksSinceFire = 0
 				}
 				if win.Pressed(pixelgl.KeyW) || win.Pressed(pixelgl.KeyUp) {
-					ship.body.ApplyForceAtLocalPoint(cp.Vector{0, 1.5 * s.level.EnemyThrustForce}, cp.Vector{})
+					ship.body.ApplyForceAtLocalPoint(cp.Vector{0, 1.5 * ship.data.Thrust}, cp.Vector{})
 				}
 				if win.Pressed(pixelgl.KeyA) || win.Pressed(pixelgl.KeyLeft) {
 					if !win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
@@ -206,20 +215,16 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 				}
 			}
 			ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
-			s.label.Clear()
-			_, _ = s.label.WriteString(ship.name)
-			s.label.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 30)).Sub(s.label.Bounds().Center())))
-
 			s.healthCanvas.Clear(colornames.Black)
 			s.imd.Clear()
-			if ship.health > .5*ship.maxHealth {
+			if ship.health > .5*ship.data.Health {
 				s.imd.Color = colornames.Green
-			} else if ship.health > .3*ship.maxHealth {
+			} else if ship.health > .3*ship.data.Health {
 				s.imd.Color = colornames.Yellow
 			} else {
 				s.imd.Color = colornames.Red
 			}
-			s.imd.Push(pixel.V(0, 0), pixel.V(float64(ship.health)/float64(ship.maxHealth)*64, 8))
+			s.imd.Push(pixel.V(0, 0), pixel.V(float64(ship.health)/float64(ship.health)*64, 8))
 			s.imd.Rectangle(0)
 			s.imd.Draw(s.healthCanvas)
 			s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
@@ -239,11 +244,9 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	Draw(win, s.canvas)
 }
 
-type Health = game.Health
-
 func PlayLevel(index int) *LevelScene {
 	var scene LevelScene
-	scene.level = assets.Levels[index]
+	scene.level = smasteroids.Levels[index]
 	// initialize graphics
 	scene.imd = imdraw.New(nil)
 	scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
@@ -293,8 +296,8 @@ func PlayLevel(index int) *LevelScene {
 	damageHandler := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
 	damageHandler.BeginFunc = func(arb *cp.Arbiter, space *cp.Space, userData interface{}) bool {
 		playerB, enemyB := arb.Bodies()
-		player := playerB.UserData.(*Health)
-		enemy := enemyB.UserData.(*Health)
+		player := playerB.UserData.(*float64)
+		enemy := enemyB.UserData.(*float64)
 		temp := *player - *enemy*.5
 		*enemy = *enemy - *player*.5
 		*player = temp
@@ -313,18 +316,17 @@ func PlayLevel(index int) *LevelScene {
 		}
 	}
 
-	// initialize ships
-	leveldata := assets.Levels[index]
-
-	scene.player = scene.newShip(leveldata.PlayerHealth, "Student", false)
+	scene.player = scene.newShip(scene.level.Player, false)
 	scene.ships = append(scene.ships, scene.player)
+	scene.labels = make(map[*Ship]string)
 
-	for _, t := range leveldata.Teachers {
-		teacher := assets.Teachers[t]
-		scene.ships = append(scene.ships, scene.newShip(leveldata.EnemyHealth, teacher, true))
+	for _, enemy := range scene.level.Enemies {
+		ship := scene.newShip(enemy.Ship, true)
+		scene.ships = append(scene.ships, ship)
+		scene.labels[ship] = enemy.Name
 	}
+	scene.labelText = text.New(pixel.ZV, assets.FontLabel)
 
-	scene.label = text.New(pixel.ZV, assets.FontLabel)
 	return &scene
 }
 
