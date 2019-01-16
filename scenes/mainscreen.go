@@ -5,7 +5,7 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"gitlab.com/meyerzinn/smasteroids/assets"
-	"gitlab.com/meyerzinn/smasteroids/game"
+	"gitlab.com/meyerzinn/smasteroids/smasteroids"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 	"sync/atomic"
@@ -72,7 +72,7 @@ func Start() Scene {
 	footerActive.Store(true)
 
 	versionMessage := text.New(pixel.ZV, text.NewAtlas(basicfont.Face7x13, text.ASCII))
-	_, _ = versionMessage.WriteString("Version " + game.Version() + ".")
+	_, _ = versionMessage.WriteString("Version " + smasteroids.Version() + ".")
 	return &MainscreenScene{
 		titleMessage:      titleMessage,
 		versionMessage:    versionMessage,

@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+//go:generate packr
+
 func init() {
 	rand.Seed(int64(time.Now().Nanosecond()))
 }
