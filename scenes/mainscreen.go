@@ -1,6 +1,7 @@
 package scenes
 
 import (
+	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
@@ -17,10 +18,20 @@ const footerMessageText = "Press [ENTER] to start."
 type MainscreenScene struct {
 	titleMessage      *text.Text
 	versionMessage    *text.Text
+	controlsMessage   *text.Text
 	footerMessage     *text.Text
 	footerBlinkTicker *time.Ticker
 	footerActive      atomic.Value
 	canvas            *pixelgl.Canvas
+}
+
+var controlsText = []string{
+	"Controls:",
+	"Thrust     - [W] or [UP]",
+	"Turn Left  - [A] or [LEFT ARROW]",
+	"Turn Right - [D] or [RIGHT ARROW]",
+	"Fire       - [SPACE]",
+	"Boost      - [E]",
 }
 
 func (s *MainscreenScene) Render(win *pixelgl.Window) {
@@ -43,8 +54,11 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	// show the game title
 	bounds := s.titleMessage.Bounds()
 	//matrix := pixel.IM.Moved(canvas.Bounds().Center().ScaledXY(pixel.V(.5, 2.0/3.0)).Sub(bounds.Center()))
-	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*2/3)).Sub(bounds.Center()))
+	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/5)).Sub(bounds.Center()))
 	s.titleMessage.Draw(s.canvas, matrix)
+
+	s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Center().Sub(s.controlsMessage.Bounds().Center())))
+
 	// show the footer message
 	if s.footerActive.Load().(bool) {
 		bounds = s.footerMessage.Bounds()
@@ -65,6 +79,10 @@ func (s *MainscreenScene) Destroy() {
 func Start() Scene {
 	titleMessage := text.New(pixel.V(0, 0), assets.FontTitle)
 	_, _ = titleMessage.WriteString("SMasteroids")
+	controlsMessage := text.New(pixel.ZV, assets.FontInterface)
+	for _, l := range controlsText {
+		_, _ = fmt.Fprintln(controlsMessage, l)
+	}
 	footerMessage := text.New(pixel.ZV, assets.FontInterface)
 	_, _ = footerMessage.WriteString(footerMessageText)
 	footerBlinkTicker := time.NewTicker(time.Second)
@@ -76,6 +94,7 @@ func Start() Scene {
 	return &MainscreenScene{
 		titleMessage:      titleMessage,
 		versionMessage:    versionMessage,
+		controlsMessage:   controlsMessage,
 		footerMessage:     footerMessage,
 		footerBlinkTicker: footerBlinkTicker,
 		footerActive:      footerActive,
