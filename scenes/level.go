@@ -258,6 +258,8 @@ func PlayLevel(index int) *LevelScene {
 	scene.level = smasteroids.Levels[index]
 	scene.levelIndex = index
 
+	scene.playerBoost = 420
+
 	// initialize graphics
 	scene.imd = imdraw.New(nil)
 	scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
