@@ -54,7 +54,7 @@ func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 	if enemy {
 		shipShape.SetCollisionType(CollisionTypeEnemy)
 		shipShape.SetFilter(enemyFilter)
-		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).Scaled(rand.Float64()).Sub(CanvasBounds.Max)))
+		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).ScaledXY(pixel.V(rand.Float64(), rand.Float64())).Sub(CanvasBounds.Max)))
 	} else {
 		shipShape.SetCollisionType(CollisionTypePlayer)
 		shipShape.SetFilter(playerFilter)
