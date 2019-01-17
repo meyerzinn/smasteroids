@@ -1,0 +1,43 @@
+{
+    "product": "SMasteroids",
+    "company": "Meyer Zinn",
+    "license": "LICENSE",
+    "upgrade-code": "023ed704-a005-4e6f-921e-fd771e7b91ef",
+    "files": {
+      "guid": "43aac785-d73f-4553-aa05-cc6f00962790",
+      "items": [
+        "dist/smasteroids.exe"
+      ]
+    },
+    "env": {
+      "guid": "ab209dc6-1f85-4e24-b274-06881d3aaf56",
+      "vars": [
+        {
+          "name": "PATH",
+          "value": "[INSTALLDIR]",
+          "permanent": "no",
+          "system": "no",
+          "action": "set",
+          "part": "last"
+        }
+      ]
+    },
+    "shortcuts": {
+      "guid": "0a97eb74-3192-4ad9-8130-790a91817033",
+      "items": [
+        {
+          "name": "SMasteroids",
+          "description": "Installer for SMasteroids.",
+          "target": "[INSTALLDIR]\\SMasteroids.exe",
+          "wdir": "INSTALLDIR",
+          "arguments": ""
+        }
+      ]
+    },
+    "choco": {
+      "description": "SMasteroids",
+      "project-url": "https://gitlab.com/meyerzinn/smasteroids",
+      "tags": "asteroids game",
+      "license-url": "https://gitlab.com/meyerzinn/smasteroids/blob/master/LICENSE"
+    }
+  }
