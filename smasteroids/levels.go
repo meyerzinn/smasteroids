@@ -62,9 +62,9 @@ var chemistryEnemy = Ship{
 
 var loraxEnemy = Ship{
 	Health:       75,
-	Thrust:       120,
+	Thrust:       50,
 	Turn:         3.5,
-	Fire:         20,
+	Fire:         40,
 	BulletDamage: 15,
 }
 
@@ -223,7 +223,7 @@ var Levels = []Level{
 					Health:       1,
 					Thrust:       20,
 					Turn:         5,
-					Fire:         10,
+					Fire:         20,
 					BulletDamage: 1,
 				},
 			})...,
