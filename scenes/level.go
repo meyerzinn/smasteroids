@@ -215,7 +215,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 				} else {
 					ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 4*dt))
 				}
-				if win.Pressed(pixelgl.KeyE) && s.playerBoost > 600 {
+				if win.Pressed(pixelgl.KeyE) && s.playerBoost > 420 {
 					s.playerBoost = 0
 					ship.body.ApplyImpulseAtLocalPoint(cp.Vector{Y: 200}, cp.Vector{})
 				}
