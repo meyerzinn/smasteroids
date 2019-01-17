@@ -48,7 +48,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	// show the footer message
 	if s.footerActive.Load().(bool) {
 		bounds = s.footerMessage.Bounds()
-		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/3)).Sub(bounds.Center()))
+		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/5)).Sub(bounds.Center()))
 		s.footerMessage.Draw(s.canvas, matrix)
 	}
 

@@ -45,33 +45,33 @@ var middleSchoolEnemy = Ship{
 }
 
 var biologyEnemy = Ship{
-	Health:       25,
-	Thrust:       100,
-	Turn:         3.5,
+	Health:       20,
+	Thrust:       75,
+	Turn:         3,
 	Fire:         25,
-	BulletDamage: 7.5,
+	BulletDamage: 6,
 }
 
 var chemistryEnemy = Ship{
-	Health:       35,
-	Thrust:       130,
-	Turn:         4,
-	Fire:         15,
-	BulletDamage: 10,
+	Health:       25,
+	Thrust:       85,
+	Turn:         3.25,
+	Fire:         22,
+	BulletDamage: 8,
 }
 
 var loraxEnemy = Ship{
 	Health:       75,
 	Thrust:       120,
-	Turn:         4,
+	Turn:         3.5,
 	Fire:         20,
 	BulletDamage: 15,
 }
 
 var physicsEnemy = Ship{
 	Health:       50,
-	Thrust:       120,
-	Turn:         4,
+	Thrust:       100,
+	Turn:         3.75,
 	Fire:         20,
 	BulletDamage: 15,
 }
@@ -109,7 +109,7 @@ var Levels = []Level{
 		Name: "Middle School",
 		Player: Ship{
 			Health:       30,
-			Thrust:       110,
+			Thrust:       120,
 			Turn:         4,
 			Fire:         20,
 			BulletDamage: 7.5,
@@ -137,7 +137,7 @@ var Levels = []Level{
 		Name: "The Biologists",
 		Player: Ship{
 			Health:       50,
-			Thrust:       120,
+			Thrust:       130,
 			Turn:         4,
 			Fire:         15,
 			BulletDamage: 10,
@@ -156,7 +156,7 @@ var Levels = []Level{
 				Ship: biologyEnemy,
 			},
 		},
-			mult(4, Enemy{
+			mult(2, Enemy{
 				Name: "Skeleton",
 				Ship: Ship{
 					Health:       10,
@@ -171,7 +171,7 @@ var Levels = []Level{
 		Name: "The Chemists",
 		Player: Ship{
 			Health:       60,
-			Thrust:       120,
+			Thrust:       140,
 			Turn:         4,
 			Fire:         15,
 			BulletDamage: 10,
@@ -202,7 +202,7 @@ var Levels = []Level{
 		Name: "The Lorax",
 		Player: Ship{
 			Health:       80,
-			Thrust:       120,
+			Thrust:       150,
 			Turn:         4,
 			Fire:         20,
 			BulletDamage: 15,
@@ -233,7 +233,7 @@ var Levels = []Level{
 		Name: "The Physicists",
 		Player: Ship{
 			Health:       100,
-			Thrust:       130,
+			Thrust:       150,
 			Turn:         4,
 			Fire:         10,
 			BulletDamage: 5,

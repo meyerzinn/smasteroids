@@ -111,6 +111,7 @@ type LevelScene struct {
 	space              *cp.Space
 	player             *Ship
 	playerTarget       cp.Vector
+	playerBoost        int
 	ships              []*Ship
 	labels             map[*Ship]string
 	bullets            []*Bullet
@@ -197,6 +198,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 				s.labelText.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 30)).Sub(s.labelText.Bounds().Center())))
 
 			} else {
+				s.playerBoost++
 				if (win.Pressed(pixelgl.KeySpace) || win.Pressed(pixelgl.KeyEnter)) && ship.ticksSinceFire > 20 {
 					s.bullets = append(s.bullets, s.newBullet(ship, 100, false))
 					ship.ticksSinceFire = 0
@@ -212,6 +214,10 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 					ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), -3, 4*dt))
 				} else {
 					ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 4*dt))
+				}
+				if win.Pressed(pixelgl.KeyE) && s.playerBoost > 600 {
+					s.playerBoost = 0
+					ship.body.ApplyImpulseAtLocalPoint(cp.Vector{Y: 200}, cp.Vector{})
 				}
 			}
 			// draw ship
@@ -250,6 +256,8 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 func PlayLevel(index int) *LevelScene {
 	var scene LevelScene
 	scene.level = smasteroids.Levels[index]
+	scene.levelIndex = index
+
 	// initialize graphics
 	scene.imd = imdraw.New(nil)
 	scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
@@ -277,7 +285,7 @@ func PlayLevel(index int) *LevelScene {
 	space := cp.NewSpace()
 	scene.space = space
 	space.SetGravity(cp.Vector{})
-	space.SetDamping(.8)
+	space.SetDamping(.75)
 
 	hw := CanvasBounds.W() / 2
 	hh := CanvasBounds.H() / 2
