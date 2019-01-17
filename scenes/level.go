@@ -157,7 +157,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		Current = Death(s.levelIndex)
 		return
 	}
-	if len(s.ships) == 1 { // all enemies dead
+	if len(s.ships) == 1 || (win.Pressed(pixelgl.KeyJ) && win.Pressed(pixelgl.KeyA) && win.Pressed(pixelgl.KeyN) && win.Pressed(pixelgl.KeyK)) { // all enemies dead or cheatcode active
 		if s.levelIndex == len(smasteroids.Levels)-1 {
 			Current = Win()
 		} else {

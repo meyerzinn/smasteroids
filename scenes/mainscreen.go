@@ -90,7 +90,7 @@ func Start() Scene {
 	footerActive.Store(true)
 
 	versionMessage := text.New(pixel.ZV, text.NewAtlas(basicfont.Face7x13, text.ASCII))
-	_, _ = versionMessage.WriteString("Version " + smasteroids.Version() + ".")
+	_, _ = versionMessage.WriteString("Version " + smasteroids.Version() + ". Developed by Meyer Zinn.")
 	return &MainscreenScene{
 		titleMessage:      titleMessage,
 		versionMessage:    versionMessage,

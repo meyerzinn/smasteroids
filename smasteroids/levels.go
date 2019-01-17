@@ -53,10 +53,10 @@ var biologyEnemy = Ship{
 }
 
 var chemistryEnemy = Ship{
-	Health:       25,
-	Thrust:       85,
+	Health:       30,
+	Thrust:       80,
 	Turn:         3.25,
-	Fire:         22,
+	Fire:         30,
 	BulletDamage: 8,
 }
 
@@ -189,11 +189,11 @@ var Levels = []Level{
 			mult(8, Enemy{
 				Name: "VisorGogs",
 				Ship: Ship{
-					Health:       15,
-					Thrust:       90,
+					Health:       10,
+					Thrust:       100,
 					Turn:         3.5,
-					Fire:         30,
-					BulletDamage: 4,
+					Fire:         60,
+					BulletDamage: 2,
 				},
 			})...
 		),
