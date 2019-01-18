@@ -44,6 +44,7 @@ func run() {
 	scenes.Current = scenes.Start()
 	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)
+	win.SetCursorVisible(false)
 	defer ticker.Stop()
 	for !win.Closed() {
 		for _, m := range pixelgl.Monitors() {
