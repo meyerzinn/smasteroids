@@ -27,11 +27,12 @@ func run() {
 	}
 	//width, height := monitor.Size()
 	cfg := pixelgl.WindowConfig{
-		Title:  "SMasteroids",
-		Bounds: pixel.R(0, 0, 1920, 1080),
-		VSync:  true,
-		//Resizable: true,
-		Monitor: monitor,
+		Title:     "SMasteroids",
+		Bounds:    pixel.R(0, 0, 1920, 1080),
+		VSync:     true,
+		Resizable: true,
+
+		Monitor:   monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
