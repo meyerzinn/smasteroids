@@ -17,14 +17,21 @@ func init() {
 }
 
 func run() {
-	primaryMonitor := pixelgl.PrimaryMonitor()
-	width, height := primaryMonitor.Size()
+	var monitor = pixelgl.PrimaryMonitor()
+	for _, m := range pixelgl.Monitors() {
+		xp, _ := m.PhysicalSize()
+		xo, _ := monitor.PhysicalSize()
+		if xp > xo {
+			monitor = m
+		}
+	}
+	//width, height := monitor.Size()
 	cfg := pixelgl.WindowConfig{
 		Title:  "SMasteroids",
-		Bounds: pixel.R(0, 0, width, height),
+		Bounds: pixel.R(0, 0, 1920, 1080),
 		VSync:  true,
 		//Resizable: true,
-		Monitor: primaryMonitor,
+		Monitor: monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
@@ -35,10 +42,20 @@ func run() {
 	CenterWindow(win)
 	//win.SetMatrix(pixel.IM.Scaled(win.Bounds().Center(), width/1024.0))
 	scenes.Current = scenes.Start()
-	tickDuration := time.Duration(math.Floor((1.0/primaryMonitor.RefreshRate())*math.Pow10(9))) * time.Nanosecond
+	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)
 	defer ticker.Stop()
 	for !win.Closed() {
+		for _, m := range pixelgl.Monitors() {
+			xp, _ := m.PhysicalSize()
+			xo, _ := monitor.PhysicalSize()
+			if xp > xo {
+				monitor = m
+			}
+		}
+		win.SetMonitor(monitor)
+		w, _ := monitor.Size()
+		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, win.Bounds().W()/w))
 		win.Clear(colornames.Black)
 		scenes.Current.Render(win)
 		if win.Pressed(pixelgl.KeyEscape) {
