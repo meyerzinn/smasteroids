@@ -128,7 +128,7 @@ var Levels = []Level{
 				Ship: middleSchoolEnemy,
 			},
 			{
-				Name: "David Smith",
+				Name: "Zach Smith",
 				Ship: middleSchoolEnemy,
 			},
 		},
