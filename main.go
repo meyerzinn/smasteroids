@@ -31,7 +31,6 @@ func run() {
 		Bounds:    pixel.R(0, 0, 1920, 1080),
 		VSync:     true,
 		Resizable: true,
-
 		Monitor:   monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)

@@ -1,32 +1,6 @@
+// +build !varsity
+
 package smasteroids
-
-type Ship struct {
-	// Health is the amount of health the ship starts with and the maximum health they can have.
-	Health float64
-	// Thrust is the amount of force applied at every tick the ship is thrusting.
-	Thrust float64
-	// Turn is the maximum angular velocity the ship can have.
-	Turn float64
-	// Fire is the minimum number of ticks before the ship can fire again.
-	Fire int
-	// BulletDamage is the damage for bullets the ship fires.
-	BulletDamage float64
-}
-
-// Enemy represents an enemy in a level that must be defeated for the player to advance to the next level or win.
-type Enemy struct {
-	// Name is the name of the enemy to be displayed. If blank, no name is displayed (but there is still a vertical gap
-	// between the ship and its health bar).
-	Name string
-	Ship
-}
-
-// Level represents a game level the player must progress through.
-type Level struct {
-	Name    string
-	Player  Ship
-	Enemies []Enemy
-}
 
 var lowerSchoolEnemy = Ship{
 	Health:       10,
@@ -76,6 +50,14 @@ var physicsEnemy = Ship{
 	BulletDamage: 15,
 }
 
+var administrationEnemy = Ship{
+	Health:       100,
+	Thrust:       120,
+	Turn:         4.25,
+	Fire:         10,
+	BulletDamage: 10,
+}
+
 var Levels = []Level{
 	{
 		Name: "Lower School",
@@ -88,19 +70,23 @@ var Levels = []Level{
 		},
 		Enemies: []Enemy{
 			{
-				Name: "Kay Carrio",
+				Name: "Carrio",
 				Ship: lowerSchoolEnemy,
 			},
 			{
-				Name: "Debra Materre",
+				Name: "Materre",
 				Ship: lowerSchoolEnemy,
 			},
 			{
-				Name: "Laura Pigg",
+				Name: "Pigg",
 				Ship: lowerSchoolEnemy,
 			},
 			{
-				Name: "Catherine Wetzel",
+				Name: "Wetzel",
+				Ship: lowerSchoolEnemy,
+			},
+			{
+				Name: "Dillon",
 				Ship: lowerSchoolEnemy,
 			},
 		},
@@ -116,19 +102,23 @@ var Levels = []Level{
 		},
 		Enemies: []Enemy{
 			{
-				Name: "Matt Dillon",
+				Name: "Dillon",
 				Ship: middleSchoolEnemy,
 			},
 			{
-				Name: "Paul Hoehn",
+				Name: "Hoehn",
 				Ship: middleSchoolEnemy,
 			},
 			{
-				Name: "Donald Kiehn",
+				Name: "Kiehn",
 				Ship: middleSchoolEnemy,
 			},
 			{
-				Name: "Zach Smith",
+				Name: "Smith",
+				Ship: middleSchoolEnemy,
+			},
+			{
+				Name: "Mead",
 				Ship: middleSchoolEnemy,
 			},
 		},
@@ -144,15 +134,15 @@ var Levels = []Level{
 		},
 		Enemies: append([]Enemy{
 			{
-				Name: "Bonnie Flint",
+				Name: "Flint",
 				Ship: biologyEnemy,
 			},
 			{
-				Name: "Nupur Israni",
+				Name: "Israni",
 				Ship: biologyEnemy,
 			},
 			{
-				Name: "Mark Adame",
+				Name: "Adame",
 				Ship: biologyEnemy,
 			},
 		},
@@ -178,11 +168,11 @@ var Levels = []Level{
 		},
 		Enemies: append([]Enemy{
 			{
-				Name: "Cristina Macaraeg",
+				Name: "Macaraeg",
 				Ship: chemistryEnemy,
 			},
 			{
-				Name: "Ken Owens",
+				Name: "Owens",
 				Ship: chemistryEnemy,
 			},
 		},
@@ -209,11 +199,7 @@ var Levels = []Level{
 		},
 		Enemies: append([]Enemy{
 			{
-				Name: "Daniel Northcut",
-				Ship: loraxEnemy,
-			},
-			{
-				Name: "John Mead",
+				Name: "Northcut",
 				Ship: loraxEnemy,
 			},
 		},
@@ -240,28 +226,41 @@ var Levels = []Level{
 		},
 		Enemies: []Enemy{
 			{
-				Name: "Stephen Houpt",
+				Name: "Houpt",
 				Ship: physicsEnemy,
 			},
 			{
-				Name: "Paul Hoehn",
+				Name: "Hoehn",
 				Ship: physicsEnemy,
 			},
 			{
-				Name: "Stephen Balog",
+				Name: "Balog",
 				Ship: physicsEnemy,
 			},
 			{
-				Name: "Fletcher Carron",
+				Name: "Carron",
 				Ship: physicsEnemy,
 			},
 		},
 	},
-}
-
-func mult(n int, enemy Enemy) (out []Enemy) {
-	for i := 0; i < n; i++ {
-		out = append(out, enemy)
-	}
-	return
+	{
+		Name: "The Administration",
+		Player: Ship{
+			Health:       100,
+			Thrust:       150,
+			Turn:         4.25,
+			Fire:         10,
+			BulletDamage: 7.5,
+		},
+		Enemies: []Enemy{
+			{
+				Name: "Dini",
+				Ship: administrationEnemy,
+			},
+			{
+				Name: "Igoe",
+				Ship: administrationEnemy,
+			},
+		},
+	},
 }
