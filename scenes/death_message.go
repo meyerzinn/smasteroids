@@ -25,8 +25,7 @@ type deathMessageScene struct {
 
 func (s *deathMessageScene) Render(win *pixelgl.Window) {
 	if win.Pressed(pixelgl.KeyEnter) {
-		s.Destroy()
-		Current = TitleScene(s.level)
+		TransitionTo(TitleScene(s.level))
 		return
 	}
 

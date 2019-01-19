@@ -1,5 +1,7 @@
 package smasteroids
 
+import "time"
+
 type Ship struct {
 	// Health is the amount of health the ship starts with and the maximum health they can have.
 	Health float64
@@ -8,7 +10,7 @@ type Ship struct {
 	// Turn is the maximum angular velocity the ship can have.
 	Turn float64
 	// Fire is the minimum number of ticks before the ship can fire again.
-	Fire int
+	Fire time.Duration
 	// BulletDamage is the damage for bullets the ship fires.
 	BulletDamage float64
 }
@@ -32,7 +34,7 @@ var lowerSchoolEnemy = Ship{
 	Health:       10,
 	Thrust:       50,
 	Turn:         2,
-	Fire:         30,
+	Fire:         time.Second / 2,
 	BulletDamage: 2,
 }
 
@@ -40,7 +42,7 @@ var middleSchoolEnemy = Ship{
 	Health:       15,
 	Thrust:       60,
 	Turn:         2.5,
-	Fire:         30,
+	Fire:         time.Second / 2,
 	BulletDamage: 4,
 }
 
@@ -48,7 +50,7 @@ var biologyEnemy = Ship{
 	Health:       20,
 	Thrust:       75,
 	Turn:         3,
-	Fire:         25,
+	Fire:         time.Millisecond * 417,
 	BulletDamage: 6,
 }
 
@@ -56,7 +58,7 @@ var chemistryEnemy = Ship{
 	Health:       30,
 	Thrust:       80,
 	Turn:         3.25,
-	Fire:         30,
+	Fire:         time.Second/2,
 	BulletDamage: 8,
 }
 
@@ -64,7 +66,7 @@ var loraxEnemy = Ship{
 	Health:       75,
 	Thrust:       50,
 	Turn:         3.5,
-	Fire:         40,
+	Fire:         time.Second/3*2,
 	BulletDamage: 15,
 }
 
@@ -72,7 +74,7 @@ var physicsEnemy = Ship{
 	Health:       50,
 	Thrust:       100,
 	Turn:         3.75,
-	Fire:         20,
+	Fire:         time.Second/3,
 	BulletDamage: 15,
 }
 
@@ -83,7 +85,7 @@ var Levels = []Level{
 			Health:       20,
 			Thrust:       100,
 			Turn:         4,
-			Fire:         20,
+			Fire:         time.Second/3,
 			BulletDamage: 5,
 		},
 		Enemies: []Enemy{
@@ -111,7 +113,7 @@ var Levels = []Level{
 			Health:       30,
 			Thrust:       120,
 			Turn:         4,
-			Fire:         20,
+			Fire:         time.Second/3,
 			BulletDamage: 7.5,
 		},
 		Enemies: []Enemy{
@@ -139,7 +141,7 @@ var Levels = []Level{
 			Health:       50,
 			Thrust:       130,
 			Turn:         4,
-			Fire:         15,
+			Fire:         time.Second/4,
 			BulletDamage: 10,
 		},
 		Enemies: append([]Enemy{
@@ -162,7 +164,7 @@ var Levels = []Level{
 					Health:       10,
 					Thrust:       80,
 					Turn:         3.75,
-					Fire:         30,
+					Fire:         time.Second/2,
 					BulletDamage: 7.5,
 				},
 			})...),
@@ -173,7 +175,7 @@ var Levels = []Level{
 			Health:       60,
 			Thrust:       140,
 			Turn:         4,
-			Fire:         15,
+			Fire:         time.Second/3,
 			BulletDamage: 10,
 		},
 		Enemies: append([]Enemy{
@@ -192,7 +194,7 @@ var Levels = []Level{
 					Health:       10,
 					Thrust:       100,
 					Turn:         3.5,
-					Fire:         60,
+					Fire:         time.Second,
 					BulletDamage: 2,
 				},
 			})...
@@ -204,7 +206,7 @@ var Levels = []Level{
 			Health:       80,
 			Thrust:       150,
 			Turn:         4,
-			Fire:         20,
+			Fire:         time.Second/3,
 			BulletDamage: 15,
 		},
 		Enemies: append([]Enemy{
@@ -223,7 +225,7 @@ var Levels = []Level{
 					Health:       1,
 					Thrust:       20,
 					Turn:         5,
-					Fire:         20,
+					Fire:         time.Second/3,
 					BulletDamage: 1,
 				},
 			})...,
@@ -235,7 +237,7 @@ var Levels = []Level{
 			Health:       100,
 			Thrust:       150,
 			Turn:         4,
-			Fire:         10,
+			Fire:         time.Second/6,
 			BulletDamage: 5,
 		},
 		Enemies: []Enemy{

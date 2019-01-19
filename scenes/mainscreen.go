@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const MaxPlayers = 2
+
 const footerMessageText = "Press [ENTER] to start."
 
 type MainscreenScene struct {
@@ -25,19 +27,45 @@ type MainscreenScene struct {
 	canvas            *pixelgl.Canvas
 }
 
-var controlsText = []string{
-	"Controls:",
-	"Thrust     - [W] or [UP]",
-	"Turn Left  - [A] or [LEFT ARROW]",
-	"Turn Right - [D] or [RIGHT ARROW]",
+var controlsText = [][]string{{
+	"Player 1 Controls:",
+	"Thrust     - [W]",
+	"Turn Left  - [A]",
+	"Turn Right - [D]",
 	"Fire       - [SPACE]",
 	"Boost      - [E]",
+}, {
+	"Player 2 Controls:",
+	"Thrust     - [UP]",
+	"Turn Left  - [LEFT]",
+	"Turn Right - [RIGHT]",
+	"Fire       - [RIGHT CTRL]",
+	"Boost      - [RIGHT SHIFT]",
+}}
+
+var joinText = []string{
+	"Press [UP] to join.",
 }
 
 func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	if win.Pressed(pixelgl.KeyEnter) {
-		s.Destroy()
-		Current = Play()
+		TransitionTo(Play())
+	}
+
+	if win.JustPressed(pixelgl.KeyUp) {
+		if len(Players) == 2 {
+			Players = Players[:1]
+		} else {
+			Players = append(Players, ControllerInputFn(func(win *pixelgl.Window) Controls {
+				return Controls{
+					Thrust: win.Pressed(pixelgl.KeyUp),
+					Left:   win.Pressed(pixelgl.KeyLeft),
+					Right:  win.Pressed(pixelgl.KeyRight),
+					Boost:  win.Pressed(pixelgl.KeyRightShift),
+					Shoot:  win.Pressed(pixelgl.KeyRightControl),
+				}
+			}))
+		}
 	}
 
 	// make the footer blink
@@ -57,7 +85,20 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/5)).Sub(bounds.Center()))
 	s.titleMessage.Draw(s.canvas, matrix)
 
-	s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Center().Sub(s.controlsMessage.Bounds().Center())))
+	for i := range Players {
+		s.controlsMessage.Clear()
+		for _, l := range controlsText[i] {
+			_, _ = fmt.Fprintln(s.controlsMessage, l)
+		}
+		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center()))
+		s.controlsMessage.Draw(s.canvas, matrix)
+	}
+	for i := len(Players); i < MaxPlayers; i++ {
+		s.controlsMessage.Clear()
+		_, _ = s.controlsMessage.WriteString(joinText[i-1])
+		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center()))
+		s.controlsMessage.Draw(s.canvas, matrix)
+	}
 
 	// show the footer message
 	if s.footerActive.Load().(bool) {
@@ -80,17 +121,26 @@ func Start() Scene {
 	titleMessage := text.New(pixel.V(0, 0), assets.FontTitle)
 	_, _ = titleMessage.WriteString("SMasteroids")
 	controlsMessage := text.New(pixel.ZV, assets.FontInterface)
-	for _, l := range controlsText {
-		_, _ = fmt.Fprintln(controlsMessage, l)
-	}
 	footerMessage := text.New(pixel.ZV, assets.FontInterface)
 	_, _ = footerMessage.WriteString(footerMessageText)
 	footerBlinkTicker := time.NewTicker(time.Second)
 	var footerActive atomic.Value
 	footerActive.Store(true)
-
 	versionMessage := text.New(pixel.ZV, text.NewAtlas(basicfont.Face7x13, text.ASCII))
 	_, _ = versionMessage.WriteString("Version " + smasteroids.Version() + ". Developed by Meyer Zinn.")
+
+	Players = []ControllerInput{
+		ControllerInputFn(func(win *pixelgl.Window) Controls {
+			return Controls{
+				Thrust: win.Pressed(pixelgl.KeyW),
+				Left: win.Pressed(pixelgl.KeyA),
+				Right: win.Pressed(pixelgl.KeyD),
+				Shoot: win.Pressed(pixelgl.KeySpace),
+				Boost: win.Pressed(pixelgl.KeyE),
+			}
+		}),
+	}
+
 	return &MainscreenScene{
 		titleMessage:      titleMessage,
 		versionMessage:    versionMessage,

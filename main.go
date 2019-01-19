@@ -30,7 +30,7 @@ func run() {
 		Title:  "SMasteroids",
 		Bounds: pixel.R(0, 0, 1920, 1080),
 		VSync:  true,
-		//Resizable: true,
+		Resizable: true,
 		Monitor: monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
@@ -41,7 +41,7 @@ func run() {
 	scenes.CanvasBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
 	CenterWindow(win)
 	//win.SetMatrix(pixel.IM.Scaled(win.Bounds().Center(), width/1024.0))
-	scenes.Current = scenes.Start()
+	scenes.TransitionTo(scenes.Start())
 	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)
 	defer ticker.Stop()
@@ -57,7 +57,7 @@ func run() {
 		w, _ := monitor.Size()
 		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, win.Bounds().W()/w))
 		win.Clear(colornames.Black)
-		scenes.Current.Render(win)
+		scenes.Render(win)
 		if win.Pressed(pixelgl.KeyEscape) {
 			win.SetClosed(true)
 		}

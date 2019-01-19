@@ -24,7 +24,7 @@ type LevelTitleScene struct {
 func (s *LevelTitleScene) Render(win *pixelgl.Window) {
 	select {
 	case <-s.nextTimer.C:
-		Current = PlayLevel(s.levelIndex)
+		TransitionTo(PlayLevel(s.levelIndex))
 		return
 	default:
 	}
@@ -36,9 +36,6 @@ func (s *LevelTitleScene) Render(win *pixelgl.Window) {
 	matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/9)).Sub(bounds.Center()))
 	s.titleText.Draw(s.canvas, matrix)
 	Draw(win, s.canvas)
-}
-
-func (s *LevelTitleScene) Destroy() {
 }
 
 func Play() Scene {

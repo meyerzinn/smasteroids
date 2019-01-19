@@ -24,7 +24,7 @@ type WinScene struct {
 func (s *WinScene) Render(win *pixelgl.Window) {
 	if win.Pressed(pixelgl.KeySpace) {
 		s.Destroy()
-		Current = Play()
+		current = Play()
 	}
 
 	// make the footer blink
