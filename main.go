@@ -55,7 +55,7 @@ func run() {
 		}
 		win.SetMonitor(monitor)
 		w, _ := monitor.Size()
-		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, win.Bounds().W()/w))
+		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, w/scenes.CanvasBounds.W()))
 		win.Clear(colornames.Black)
 		scenes.Render(win)
 		if win.Pressed(pixelgl.KeyEscape) {

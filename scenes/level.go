@@ -19,8 +19,6 @@ const (
 	CollisionTypePlayer = 1 << (iota + 1)
 	CollisionTypeEnemy
 	CollisionTypeWall
-	CollisionTypeShip
-	CollisionTypeBullet
 )
 
 const BoostDelay = 7 * time.Second
@@ -39,12 +37,10 @@ func cp2p(v cp.Vector) pixel.Vec {
 }
 
 var (
-	playerShipFilter   = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypePlayer|CollisionTypeShip), uint(CollisionTypeWall|CollisionTypeEnemy))
-	playerBulletFilter = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypePlayer|CollisionTypeBullet), uint(CollisionTypeWall|CollisionTypeEnemy))
-	enemyShipFilter    = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeEnemy|CollisionTypeShip), uint(CollisionTypeWall|CollisionTypePlayer))
-	enemyBulletFilter  = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeEnemy|CollisionTypeBullet), uint(CollisionTypeWall|CollisionTypePlayer))
-	playerFilter       = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypePlayer), uint(CollisionTypeWall|CollisionTypeEnemy))
-	enemyFilter        = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeEnemy), uint(CollisionTypeWall|CollisionTypePlayer))
+	playerShipFilter   = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypePlayer), uint(CollisionTypeWall|CollisionTypeEnemy))
+	playerBulletFilter = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypePlayer), uint(CollisionTypeWall|CollisionTypeEnemy))
+	enemyShipFilter    = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeEnemy), uint(CollisionTypeWall|CollisionTypePlayer))
+	enemyBulletFilter  = cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeEnemy), uint(CollisionTypeWall|CollisionTypePlayer))
 )
 
 var shipVertices = []cp.Vector{{-12, -12}, {0, 24}, {12, -12}}
@@ -55,9 +51,6 @@ type Ship struct {
 	data     smasteroids.Ship
 	lastFire time.Time
 	health   float64
-	//name           string
-	//health         Health
-	//health      Health
 }
 
 func (s *Ship) drawHealthbar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
@@ -80,11 +73,11 @@ func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 	shipShape := s.space.AddShape(cp.NewPolyShape(body, len(shipVertices), shipVertices, cp.NewTransformIdentity(), 1))
 	if enemy {
 		shipShape.SetCollisionType(CollisionTypeEnemy)
-		shipShape.SetFilter(enemyFilter)
+		shipShape.SetFilter(enemyShipFilter)
 		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).ScaledXY(pixel.V(rand.Float64(), rand.Float64())).Sub(CanvasBounds.Max)))
 	} else {
 		shipShape.SetCollisionType(CollisionTypePlayer)
-		shipShape.SetFilter(playerFilter)
+		shipShape.SetFilter(playerShipFilter)
 	}
 
 	ship := &Ship{
@@ -109,10 +102,10 @@ func (s *LevelScene) newBullet(parent *Ship, ttl time.Duration, enemy bool) *Bul
 	bulletShape := s.space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
 	if enemy {
 		bulletShape.SetCollisionType(CollisionTypeEnemy)
-		bulletShape.SetFilter(enemyFilter)
+		bulletShape.SetFilter(enemyBulletFilter)
 	} else {
 		bulletShape.SetCollisionType(CollisionTypePlayer)
-		bulletShape.SetFilter(playerFilter)
+		bulletShape.SetFilter(playerBulletFilter)
 	}
 	body.SetPosition(parent.body.Position())
 	body.SetVelocityVector(parent.body.Velocity())
@@ -220,10 +213,13 @@ func (s *LevelScene) getPlayerFromBody(body *cp.Body) (*Player, bool) {
 }
 
 func (s *LevelScene) Render(win *pixelgl.Window) {
-	if len(s.players) == 0 { // everybody dead
+	// Go to death screen if all players are dead.
+	if len(s.players) == 0 {
 		TransitionTo(Death(s.levelIndex))
 		return
 	}
+
+	// Next level if all enemies are dead, and cheatcode to skip ahead.
 	if len(s.enemies) == 0 || (win.Pressed(pixelgl.KeyJ) && win.Pressed(pixelgl.KeyA) && win.Pressed(pixelgl.KeyN) && win.Pressed(pixelgl.KeyK)) { // all enemies dead or cheatcode active
 		if s.levelIndex == len(smasteroids.Levels)-1 {
 			TransitionTo(Win())
@@ -233,7 +229,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		}
 	}
 
-	// Advance physics simulation
+	// Advance physics simulation.
 	now := time.Now()
 	dt := now.Sub(s.lastTick).Seconds()
 	s.lastTick = now
@@ -242,47 +238,53 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	}
 	s.space.Step(dt)
 
-	// render + handle inputs
+	// Render the scene.
+
 	s.canvas.Clear(colornames.Black)
 
-	for i := len(s.players)-1; i>=0; i-- {
+	// Update and draw players.
+	for i := len(s.players) - 1; i >= 0; i-- {
 		player := s.players[i]
+		// Delete dead players.
 		if player.Ship.health <= 0 {
 			s.deletePlayer(i)
 			continue
 		}
+		// Update target position for AI.
 		player.TargetPosition = player.TargetPosition.LerpT(player.Ship.body.Position().Add(player.Ship.body.Velocity()), dt)
 		ship := player.Ship
+		// Fetch player controls.
 		controls := player.Controls(win)
+		// Shoot bullet.
 		if controls.Shoot && ship.lastFire.Add(ship.data.Fire).Before(now) {
-			//if (win.Pressed(pixelgl.KeySpace) || win.Pressed(pixelgl.KeyEnter)) && ship.ticksSinceFire > 20 {
-			s.bullets = append(s.bullets, s.newBullet(ship, 7*time.Second, false))
+			s.bullets = append(s.bullets, s.newBullet(ship, 3*time.Second, false))
 			ship.lastFire = now
 		}
+		// Apply thrust.
 		if controls.Thrust {
-			//if win.Pressed(pixelgl.KeyW) || win.Pressed(pixelgl.KeyUp) {
 			ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: 1.5 * ship.data.Thrust}, cp.Vector{})
 		}
+		// Apply rotation.
 		if controls.Left && !controls.Right {
-			//if win.Pressed(pixelgl.KeyA) || win.Pressed(pixelgl.KeyLeft) {
-			//	if !win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
-			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 3, 4*dt))
+			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), ship.data.Turn, 3*dt))
 		} else if controls.Right {
-			//} else if win.Pressed(pixelgl.KeyD) || win.Pressed(pixelgl.KeyRight) {
-			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), -3, 4*dt))
+			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), -ship.data.Turn, 3*dt))
 		} else {
-			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 4*dt))
+			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 3*dt))
 		}
+		// Apply boost.
 		if controls.Boost && player.LastBoost.Add(BoostDelay).Before(now) {
-			//if win.Pressed(pixelgl.KeyE) && player.LastBoost > 420 {
-			//	s.playerBoost = 0
 			player.LastBoost = now
 			ship.body.ApplyImpulseAtLocalPoint(cp.Vector{Y: 200}, cp.Vector{})
 		}
+		// Draw sprite.
 		ship.sprite.DrawColorMask(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())), player.Color)
+		// Draw health bar.
 		ship.drawHealthbar(s.imd, s.healthCanvas)
 		s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
 	}
+
+	// Update and draw enemies.
 
 	for i := len(s.enemies) - 1; i >= 0; i-- {
 		ship := s.enemies[i]
@@ -290,10 +292,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			s.deleteEnemy(i)
 			continue
 		}
-		// draw player
-		//ship.sprite.Draw(s)
-		//ship.sprite.DrawColorMask(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())), player.Color)
-		closestPlayer := s.space.PointQueryNearest(ship.body.Position(), 1000, playerShipFilter, )
+		closestPlayer := s.space.PointQueryNearest(ship.body.Position(), 10000, playerShipFilter)
 		var target cp.Vector
 		if closestPlayer.Shape != nil {
 			targetPlayer, ok := s.getPlayerFromBody(closestPlayer.Shape.Body())
@@ -305,7 +304,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, ship.data.Turn*dt))
 		ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: ship.data.Thrust}, cp.Vector{})
 		if ship.lastFire.Add(ship.data.Fire).Before(now) {
-			s.bullets = append(s.bullets, s.newBullet(ship, 7*time.Second, true))
+			s.bullets = append(s.bullets, s.newBullet(ship, 3*time.Second, true))
 			ship.lastFire = now
 		}
 
@@ -318,12 +317,8 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		ship.drawHealthbar(s.imd, s.healthCanvas)
 		s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
 	}
-	// draw ship
 
-	// draw health bar
-	s.healthCanvas.Clear(colornames.Black)
-	s.imd.Clear()
-
+	// Draw bullets.
 	for i := len(s.bullets) - 1; i >= 0; i-- {
 		bullet := s.bullets[i]
 		if bullet.health <= 0 || bullet.despawn.Before(now) {
@@ -333,6 +328,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		}
 	}
 
+	// Render scene to the window.
 	Draw(win, s.canvas)
 }
 
@@ -389,12 +385,7 @@ func PlayLevel(index int) *LevelScene {
 
 	damageHandler := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
 	damageHandler.BeginFunc = func(arb *cp.Arbiter, space *cp.Space, userData interface{}) bool {
-		playerB, enemyB := arb.Bodies()
-		player := playerB.UserData.(*float64)
-		enemy := enemyB.UserData.(*float64)
-		temp := *player - math.Max(*enemy*.5, 0)
-		*enemy = *enemy - math.Max(*player*.5, 0)
-		*player = temp
+		damage(arb.Bodies())
 		return true
 	}
 
@@ -429,6 +420,14 @@ func PlayLevel(index int) *LevelScene {
 	scene.labelText = text.New(pixel.ZV, assets.FontLabel)
 
 	return &scene
+}
+
+func damage(a, b *cp.Body) {
+	healthA := a.UserData.(*float64)
+	healthB := b.UserData.(*float64)
+	temp := *healthA - math.Max(*healthB*.5, 0)
+	*healthB = *healthB - math.Max(*healthA*.5, 0)
+	*healthA = temp
 }
 
 func wrap(pos cp.Vector) cp.Vector {

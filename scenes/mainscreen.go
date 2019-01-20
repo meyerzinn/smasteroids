@@ -27,7 +27,7 @@ type MainscreenScene struct {
 	canvas            *pixelgl.Canvas
 }
 
-var controlsText = [][]string{{
+var keyboardControlsText = [][]string{{
 	"Player 1 Controls:",
 	"Thrust     - [W]",
 	"Turn Left  - [A]",
@@ -87,7 +87,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 
 	for i := range Players {
 		s.controlsMessage.Clear()
-		for _, l := range controlsText[i] {
+		for _, l := range keyboardControlsText[i] {
 			_, _ = fmt.Fprintln(s.controlsMessage, l)
 		}
 		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center()))

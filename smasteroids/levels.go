@@ -64,7 +64,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       20,
 			Thrust:       100,
-			Turn:         4,
+			Turn:         3,
 			Fire:         time.Second / 3,
 			BulletDamage: 5,
 		},
@@ -96,7 +96,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       30,
 			Thrust:       120,
-			Turn:         4,
+			Turn:         3,
 			Fire:         time.Second / 3,
 			BulletDamage: 7.5,
 		},
@@ -128,7 +128,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       50,
 			Thrust:       130,
-			Turn:         4,
+			Turn:         3,
 			Fire:         time.Second / 4,
 			BulletDamage: 10,
 		},
@@ -162,7 +162,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       60,
 			Thrust:       140,
-			Turn:         4,
+			Turn:         3,
 			Fire:         time.Second / 3,
 			BulletDamage: 10,
 		},
@@ -193,7 +193,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       80,
 			Thrust:       150,
-			Turn:         4,
+			Turn:         3,
 			Fire:         time.Second / 3,
 			BulletDamage: 15,
 		},
@@ -220,7 +220,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       100,
 			Thrust:       150,
-			Turn:         4,
+			Turn:         3,
 			Fire:         time.Second / 6,
 			BulletDamage: 5,
 		},
@@ -248,7 +248,7 @@ var Levels = []Level{
 		Player: Ship{
 			Health:       100,
 			Thrust:       150,
-			Turn:         4.25,
+			Turn:         3,
 			Fire:         10,
 			BulletDamage: 7.5,
 		},
