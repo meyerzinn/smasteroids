@@ -388,13 +388,14 @@ func PlayLevel(index int) *LevelScene {
 	}
 
 	damageHandler := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
-	damageHandler.SeparateFunc = func(arb *cp.Arbiter, space *cp.Space, userData interface{}) {
+	damageHandler.BeginFunc = func(arb *cp.Arbiter, space *cp.Space, userData interface{}) bool {
 		playerB, enemyB := arb.Bodies()
 		player := playerB.UserData.(*float64)
 		enemy := enemyB.UserData.(*float64)
-		temp := *player - *enemy*.5
-		*enemy = *enemy - *player*.5
+		temp := *player - math.Max(*enemy*.5, 0)
+		*enemy = *enemy - math.Max(*player*.5, 0)
 		*player = temp
+		return true
 	}
 
 	wrapHandler := space.NewWildcardCollisionHandler(CollisionTypeWall)

@@ -25,13 +25,12 @@ func run() {
 			monitor = m
 		}
 	}
-	//width, height := monitor.Size()
 	cfg := pixelgl.WindowConfig{
-		Title:  "SMasteroids",
-		Bounds: pixel.R(0, 0, 1920, 1080),
-		VSync:  true,
+		Title:     "SMasteroids",
+		Bounds:    pixel.R(0, 0, 1920, 1080),
+		VSync:     true,
 		Resizable: true,
-		Monitor: monitor,
+		Monitor:   monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
@@ -44,6 +43,7 @@ func run() {
 	scenes.TransitionTo(scenes.Start())
 	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)
+	win.SetCursorVisible(false)
 	defer ticker.Stop()
 	for !win.Closed() {
 		for _, m := range pixelgl.Monitors() {
