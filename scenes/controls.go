@@ -19,11 +19,11 @@ var (
 
 	joystickControlSchemes = map[string]ControlScheme{
 		"8Bitdo SFC30 GamePad": {
-			Left:   JoystickButtonInputMethod{Button: 6, Alias: "L"},
-			Right:  JoystickButtonInputMethod{Button: 7, Alias: "R"},
-			Shoot:  JoystickButtonInputMethod{Button: 0, Alias: "A"},
+			Left:   JoystickAxisInputMethod{Axis: 0, Inverse: true, Threshold: .1, Alias: "LEFT"},
+			Right:  JoystickAxisInputMethod{Axis: 0, Inverse: false, Threshold: .1, Alias: "RIGHT"},
+			Shoot:  JoystickButtonInputMethod{Button: 7, Alias: "R"},
 			Boost:  JoystickButtonInputMethod{Button: 3, Alias: "X"},
-			Thrust: JoystickAxisInputMethod{Axis: 1, Inverse: false, Threshold: .1, Alias: "UP"},
+			Thrust: JoystickButtonInputMethod{Button: 0, Alias: "A"},
 		},
 	}
 )
