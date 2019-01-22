@@ -10,6 +10,8 @@ require (
 	github.com/gobuffalo/packr v1.21.9
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/jakecoffman/cp v0.1.0
+	github.com/mitchellh/gox v0.4.0 // indirect
+	github.com/mitchellh/iochan v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1
 	golang.org/x/image v0.0.0-20181116024801-cd38e8056d9b
 )
