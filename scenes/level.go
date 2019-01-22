@@ -8,6 +8,7 @@ import (
 	"github.com/jakecoffman/cp"
 	"gitlab.com/meyerzinn/smasteroids/assets"
 	"gitlab.com/meyerzinn/smasteroids/smasteroids"
+	"gitlab.com/meyerzinn/smasteroids/sprites"
 	"golang.org/x/image/colornames"
 	"image/color"
 	"math"
@@ -71,20 +72,23 @@ func (s *Ship) drawHealthbar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
 func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForPoly(1, len(shipVertices), shipVertices, cp.Vector{}, 1)))
 	shipShape := s.space.AddShape(cp.NewPolyShape(body, len(shipVertices), shipVertices, cp.NewTransformIdentity(), 1))
+	var health float64
 	if enemy {
 		shipShape.SetCollisionType(CollisionTypeEnemy)
 		shipShape.SetFilter(enemyShipFilter)
 		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).ScaledXY(pixel.V(rand.Float64(), rand.Float64())).Sub(CanvasBounds.Max)))
+		health = data.Health * float64(len(Players))
 	} else {
 		shipShape.SetCollisionType(CollisionTypePlayer)
 		shipShape.SetFilter(playerShipFilter)
+		health = data.Health
 	}
 
 	ship := &Ship{
 		body:   body,
-		sprite: pixel.NewSprite(s.shipSpriteCanvas, s.shipSpriteCanvas.Bounds()),
+		sprite: pixel.NewSprite(sprites.TextureShip, sprites.TextureShip.Bounds()),
 		data:   data,
-		health: data.Health,
+		health: health,
 	}
 	body.UserData = &ship.health
 	return ship
@@ -100,12 +104,15 @@ type Bullet struct {
 func (s *LevelScene) newBullet(parent *Ship, ttl time.Duration, enemy bool) *Bullet {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{})))
 	bulletShape := s.space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
+	var health float64
 	if enemy {
 		bulletShape.SetCollisionType(CollisionTypeEnemy)
 		bulletShape.SetFilter(enemyBulletFilter)
+		health = parent.data.BulletDamage * float64(len(Players))
 	} else {
 		bulletShape.SetCollisionType(CollisionTypePlayer)
 		bulletShape.SetFilter(playerBulletFilter)
+		health = parent.data.BulletDamage
 	}
 	body.SetPosition(parent.body.Position())
 	body.SetVelocityVector(parent.body.Velocity())
@@ -114,8 +121,8 @@ func (s *LevelScene) newBullet(parent *Ship, ttl time.Duration, enemy bool) *Bul
 	body.ApplyForceAtLocalPoint(cp.Vector{Y: 20000}, cp.Vector{})
 	bullet := &Bullet{
 		body:    body,
-		sprite:  pixel.NewSprite(s.bulletSpriteCanvas, s.bulletSpriteCanvas.Bounds()),
-		health:  parent.data.BulletDamage,
+		sprite:  pixel.NewSprite(sprites.TextureBullet, sprites.TextureBullet.Bounds()),
+		health:  health,
 		despawn: time.Now().Add(ttl),
 	}
 	body.UserData = &bullet.health
@@ -145,20 +152,18 @@ type Player struct {
 }
 
 type LevelScene struct {
-	level              smasteroids.Level
-	levelIndex         int
-	space              *cp.Space
-	players            []*Player
-	enemies            []*Ship
-	labels             map[*Ship]string
-	bullets            []*Bullet
-	lastTick           time.Time
-	canvas             *pixelgl.Canvas
-	healthCanvas       *pixelgl.Canvas
-	shipSpriteCanvas   *pixelgl.Canvas
-	bulletSpriteCanvas *pixelgl.Canvas
-	imd                *imdraw.IMDraw
-	labelText          *text.Text
+	level        smasteroids.Level
+	levelIndex   int
+	space        *cp.Space
+	players      []*Player
+	enemies      []*Ship
+	labels       map[*Ship]string
+	bullets      []*Bullet
+	lastTick     time.Time
+	canvas       *pixelgl.Canvas
+	healthCanvas *pixelgl.Canvas
+	imd          *imdraw.IMDraw
+	labelText    *text.Text
 }
 
 func (s *LevelScene) deleteEnemy(i int) {
@@ -239,7 +244,6 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	s.space.Step(dt)
 
 	// Render the scene.
-
 	s.canvas.Clear(colornames.Black)
 
 	// Update and draw players.
@@ -285,7 +289,6 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	}
 
 	// Update and draw enemies.
-
 	for i := len(s.enemies) - 1; i >= 0; i-- {
 		ship := s.enemies[i]
 		if ship.health <= 0 {
@@ -340,25 +343,8 @@ func PlayLevel(index int) *LevelScene {
 	// initialize graphics
 	scene.imd = imdraw.New(nil)
 	scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
-	scene.shipSpriteCanvas = pixelgl.NewCanvas(pixel.R(-48, -48, 48, 96))
-	scene.bulletSpriteCanvas = pixelgl.NewCanvas(pixel.R(-16, -16, 16, 16))
-	// player sprite
-	scene.imd.Color = colornames.White
-	for _, v := range shipVertices {
-		scene.imd.Push(cp2p(v).Scaled(4))
-	}
-	scene.imd.Polygon(8)
-	scene.imd.Draw(scene.shipSpriteCanvas)
-	scene.imd.Reset()
-	// bullet sprite
-	scene.imd.Color = colornames.White
-	scene.imd.Push(pixel.ZV)
-	scene.imd.Circle(16, 4)
-	scene.imd.Draw(scene.bulletSpriteCanvas)
-	scene.imd.Reset()
 
-	canvas := pixelgl.NewCanvas(CanvasBounds)
-	scene.canvas = canvas
+	scene.canvas = pixelgl.NewCanvas(CanvasBounds)
 
 	// initialize physics
 	space := cp.NewSpace()

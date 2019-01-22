@@ -4,6 +4,7 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"gitlab.com/meyerzinn/smasteroids/scenes"
+	"gitlab.com/meyerzinn/smasteroids/sprites"
 	"golang.org/x/image/colornames"
 	"math"
 	"math/rand"
@@ -37,9 +38,11 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
+	// initialize sprites
+	sprites.Init()
+	// set up canvas bounds
 	scenes.CanvasBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
 	CenterWindow(win)
-	//win.SetMatrix(pixel.IM.Scaled(win.Bounds().Center(), width/1024.0))
 	scenes.TransitionTo(scenes.Start())
 	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)

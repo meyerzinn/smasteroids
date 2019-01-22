@@ -52,11 +52,14 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		TransitionTo(Play())
 	}
 
+	// Handle player join.
 	if win.JustPressed(pixelgl.KeyUp) {
 		if len(Players) == 2 {
+			// Player leaves.
 			Players = Players[:1]
 		} else {
 			Players = append(Players, ControllerInputFn(func(win *pixelgl.Window) Controls {
+				// hardcoded for now, should probably change this
 				return Controls{
 					Thrust: win.Pressed(pixelgl.KeyUp),
 					Left:   win.Pressed(pixelgl.KeyLeft),
@@ -68,7 +71,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		}
 	}
 
-	// make the footer blink
+	// Blink the footer.
 	select {
 	case <-s.footerBlinkTicker.C:
 		s.footerActive.Store(false)
@@ -77,34 +80,32 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		})
 	default:
 	}
-	// clear the window
-	s.canvas.Clear(colornames.Black)
-	// show the game title
-	bounds := s.titleMessage.Bounds()
-	//matrix := pixel.IM.Moved(canvas.Bounds().Center().ScaledXY(pixel.V(.5, 2.0/3.0)).Sub(bounds.Center()))
-	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/5)).Sub(bounds.Center()))
-	s.titleMessage.Draw(s.canvas, matrix)
 
+	// Clear the window.
+	s.canvas.Clear(colornames.Black)
+	// Show the game title.
+	bounds := s.titleMessage.Bounds()
+	s.titleMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/5)).Sub(bounds.Center())))
+
+	// Show controls message for all currently joined players.
 	for i := range Players {
 		s.controlsMessage.Clear()
 		for _, l := range keyboardControlsText[i] {
 			_, _ = fmt.Fprintln(s.controlsMessage, l)
 		}
-		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center()))
-		s.controlsMessage.Draw(s.canvas, matrix)
+		s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/3, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
 	}
+	// Show join message for all possible players not joined.
 	for i := len(Players); i < MaxPlayers; i++ {
 		s.controlsMessage.Clear()
 		_, _ = s.controlsMessage.WriteString(joinText[i-1])
-		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center()))
-		s.controlsMessage.Draw(s.canvas, matrix)
+		s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*float64(i+1)/3, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
 	}
 
 	// show the footer message
 	if s.footerActive.Load().(bool) {
 		bounds = s.footerMessage.Bounds()
-		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/5)).Sub(bounds.Center()))
-		s.footerMessage.Draw(s.canvas, matrix)
+		s.footerMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/5)).Sub(bounds.Center())))
 	}
 
 	s.versionMessage.Draw(s.canvas, pixel.IM.Moved(CanvasBounds.Min).Moved(pixel.V(4, 4)))
@@ -128,15 +129,15 @@ func Start() Scene {
 	footerActive.Store(true)
 	versionMessage := text.New(pixel.ZV, text.NewAtlas(basicfont.Face7x13, text.ASCII))
 	_, _ = versionMessage.WriteString("Version " + smasteroids.Version() + ". Developed by Meyer Zinn.")
-
+	// Add the first player.
 	Players = []ControllerInput{
 		ControllerInputFn(func(win *pixelgl.Window) Controls {
 			return Controls{
 				Thrust: win.Pressed(pixelgl.KeyW),
-				Left: win.Pressed(pixelgl.KeyA),
-				Right: win.Pressed(pixelgl.KeyD),
-				Shoot: win.Pressed(pixelgl.KeySpace),
-				Boost: win.Pressed(pixelgl.KeyE),
+				Left:   win.Pressed(pixelgl.KeyA),
+				Right:  win.Pressed(pixelgl.KeyD),
+				Shoot:  win.Pressed(pixelgl.KeySpace),
+				Boost:  win.Pressed(pixelgl.KeyE),
 			}
 		}),
 	}
