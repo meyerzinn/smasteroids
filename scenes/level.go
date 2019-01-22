@@ -137,12 +137,6 @@ type ControllerInput interface {
 	Controls(win *pixelgl.Window) Controls
 }
 
-//type ControllerInputFn func(window *pixelgl.Window) Controls
-
-//func (fn ControllerInputFn) Controls(window *pixelgl.Window) Controls {
-//	return fn(window)
-//}
-
 type Player struct {
 	Ship           *Ship
 	TargetPosition cp.Vector

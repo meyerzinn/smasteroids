@@ -31,7 +31,7 @@ func run() {
 		Bounds:    pixel.R(0, 0, 1920, 1080),
 		VSync:     true,
 		Resizable: true,
-		//Monitor:   monitor,
+		Monitor:   monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
@@ -55,7 +55,7 @@ func run() {
 				monitor = m
 			}
 		}
-		//win.SetMonitor(monitor)
+		win.SetMonitor(monitor)
 		w, _ := monitor.Size()
 		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, w/scenes.CanvasBounds.W()))
 		win.Clear(colornames.Black)
