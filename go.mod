@@ -3,7 +3,7 @@ module gitlab.com/meyerzinn/smasteroids
 require (
 	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
-	github.com/faiface/pixel v0.8.1-0.20190110195620-a1bbfa3020c8
+	github.com/faiface/pixel v0.8.1-0.20190121221830-9e0f11abbb30
 	github.com/go-gl/gl v0.0.0-20181026044259-55b76b7df9d2 // indirect
 	github.com/go-gl/glfw v0.0.0-20181213070059-819e8ce5125f // indirect
 	github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a // indirect

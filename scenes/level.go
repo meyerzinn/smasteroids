@@ -24,7 +24,7 @@ const (
 
 const BoostDelay = 7 * time.Second
 
-var Players []ControllerInput
+var Players []ControlScheme
 var PlayerColors = []color.Color{colornames.Blue, colornames.Gold}
 
 // Convert pixel Vector to chipmunk Vector
@@ -54,7 +54,7 @@ type Ship struct {
 	health   float64
 }
 
-func (s *Ship) drawHealthbar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
+func (s *Ship) drawHealthBar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
 	to.Clear(colornames.Black)
 	imd.Clear()
 	if s.health > .5*s.data.Health {
@@ -137,18 +137,18 @@ type ControllerInput interface {
 	Controls(win *pixelgl.Window) Controls
 }
 
-type ControllerInputFn func(window *pixelgl.Window) Controls
+//type ControllerInputFn func(window *pixelgl.Window) Controls
 
-func (fn ControllerInputFn) Controls(window *pixelgl.Window) Controls {
-	return fn(window)
-}
+//func (fn ControllerInputFn) Controls(window *pixelgl.Window) Controls {
+//	return fn(window)
+//}
 
 type Player struct {
 	Ship           *Ship
 	TargetPosition cp.Vector
 	LastBoost      time.Time
 	Color          color.Color
-	ControllerInput
+	ControlScheme
 }
 
 type LevelScene struct {
@@ -174,7 +174,7 @@ func (s *LevelScene) deleteEnemy(i int) {
 	s.space.RemoveBody(ship.body)
 
 	copy(s.enemies[i:], s.enemies[i+1:])
-	s.enemies[len(s.enemies)-1] = nil // or the zero value of T
+	s.enemies[len(s.enemies)-1] = nil
 	s.enemies = s.enemies[:len(s.enemies)-1]
 }
 
@@ -186,7 +186,7 @@ func (s *LevelScene) deleteBullet(i int) {
 	s.space.RemoveBody(bullet.body)
 
 	copy(s.bullets[i:], s.bullets[i+1:])
-	s.bullets[len(s.bullets)-1] = nil // or the zero value of T
+	s.bullets[len(s.bullets)-1] = nil
 	s.bullets = s.bullets[:len(s.bullets)-1]
 }
 
@@ -198,9 +198,9 @@ func (s *LevelScene) deletePlayer(i int) {
 	})
 	s.space.RemoveBody(ship.body)
 
-	copy(s.enemies[i:], s.enemies[i+1:])
-	s.enemies[len(s.enemies)-1] = nil // or the zero value of T
-	s.enemies = s.enemies[:len(s.enemies)-1]
+	copy(s.players[i:], s.players[i+1:])
+	s.players[len(s.players)-1] = nil // or the zero value of T
+	s.players = s.players[:len(s.players)-1]
 }
 
 func (s *LevelScene) getPlayer(ship *Ship) (*Player, bool) {
@@ -238,8 +238,8 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	now := time.Now()
 	dt := now.Sub(s.lastTick).Seconds()
 	s.lastTick = now
-	if dt > 1 { // game was paused, only update by 1 "second"
-		dt = 1
+	if dt > 1.0/10 { // game is lagging, only update by 100ms
+		dt = 1.0 / 10
 	}
 	s.space.Step(dt)
 
@@ -254,9 +254,9 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			s.deletePlayer(i)
 			continue
 		}
-		// Update target position for AI.
-		player.TargetPosition = player.TargetPosition.LerpT(player.Ship.body.Position().Add(player.Ship.body.Velocity()), dt)
 		ship := player.Ship
+		// Update target position for AI.
+		player.TargetPosition = player.TargetPosition.Lerp(ship.body.Position().Add(ship.body.Velocity()), dt)
 		// Fetch player controls.
 		controls := player.Controls(win)
 		// Shoot bullet.
@@ -281,10 +281,10 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			player.LastBoost = now
 			ship.body.ApplyImpulseAtLocalPoint(cp.Vector{Y: 200}, cp.Vector{})
 		}
-		// Draw sprite.
+		// Draw sprite--scaled down for better resolution.
 		ship.sprite.DrawColorMask(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())), player.Color)
 		// Draw health bar.
-		ship.drawHealthbar(s.imd, s.healthCanvas)
+		ship.drawHealthBar(s.imd, s.healthCanvas)
 		s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
 	}
 
@@ -295,15 +295,17 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			s.deleteEnemy(i)
 			continue
 		}
-		closestPlayer := s.space.PointQueryNearest(ship.body.Position(), 10000, playerShipFilter)
+		// find closest player target to shoot at
 		var target cp.Vector
-		if closestPlayer.Shape != nil {
-			targetPlayer, ok := s.getPlayerFromBody(closestPlayer.Shape.Body())
-			if ok {
-				target = targetPlayer.TargetPosition
+		var lengthSq = math.MaxFloat64
+		for _, p := range s.players {
+			potentialTarget := p.TargetPosition.Sub(ship.body.Position())
+			if potentialTarget.LengthSq() < lengthSq {
+				target = potentialTarget
+				lengthSq = potentialTarget.LengthSq()
 			}
 		}
-		angle := target.Sub(ship.body.Position()).Normalize().ToAngle() - math.Pi/2
+		angle := target.Normalize().ToAngle() - math.Pi/2
 		ship.body.SetAngle(cp.Lerp(ship.body.Angle(), angle, ship.data.Turn*dt))
 		ship.body.ApplyForceAtLocalPoint(cp.Vector{Y: ship.data.Thrust}, cp.Vector{})
 		if ship.lastFire.Add(ship.data.Fire).Before(now) {
@@ -311,13 +313,14 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			ship.lastFire = now
 		}
 
+		// Draw sprite--scaled down for better resolution.
 		ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
 
 		s.labelText.Clear()
 		_, _ = s.labelText.WriteString(s.labels[ship])
 		s.labelText.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 30)).Sub(s.labelText.Bounds().Center())))
 
-		ship.drawHealthbar(s.imd, s.healthCanvas)
+		ship.drawHealthBar(s.imd, s.healthCanvas)
 		s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
 	}
 
@@ -366,12 +369,18 @@ func PlayLevel(index int) *LevelScene {
 		seg.SetElasticity(1)
 		seg.SetFriction(0)
 		seg.SetCollisionType(CollisionTypeWall)
-		seg.SetFilter(cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeWall), uint(CollisionTypePlayer|CollisionTypeEnemy)))
+		seg.SetSensor(true)
+		seg.SetFilter(cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeWall), uint(cp.WILDCARD_COLLISION_TYPE)))
 	}
 
-	damageHandler := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
-	damageHandler.BeginFunc = func(arb *cp.Arbiter, space *cp.Space, userData interface{}) bool {
-		damage(arb.Bodies())
+	dmg := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
+	dmg.BeginFunc = func(arb *cp.Arbiter, _ *cp.Space, _ interface{}) bool {
+		a, b := arb.Bodies()
+		healthA := a.UserData.(*float64)
+		healthB := b.UserData.(*float64)
+		temp := *healthA - math.Max(*healthB*.5, 0)
+		*healthB = *healthB - math.Max(*healthA*.5, 0)
+		*healthA = temp
 		return true
 	}
 
@@ -390,9 +399,9 @@ func PlayLevel(index int) *LevelScene {
 
 	for i, p := range Players {
 		scene.players = append(scene.players, &Player{
-			Ship:            scene.newShip(scene.level.Player, false),
-			Color:           PlayerColors[i],
-			ControllerInput: p,
+			Ship:          scene.newShip(scene.level.Player, false),
+			Color:         PlayerColors[i],
+			ControlScheme: p,
 		})
 	}
 
@@ -406,14 +415,6 @@ func PlayLevel(index int) *LevelScene {
 	scene.labelText = text.New(pixel.ZV, assets.FontLabel)
 
 	return &scene
-}
-
-func damage(a, b *cp.Body) {
-	healthA := a.UserData.(*float64)
-	healthB := b.UserData.(*float64)
-	temp := *healthA - math.Max(*healthB*.5, 0)
-	*healthB = *healthB - math.Max(*healthA*.5, 0)
-	*healthA = temp
 }
 
 func wrap(pos cp.Vector) cp.Vector {
