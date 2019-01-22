@@ -15,7 +15,6 @@ var DeathMessages = map[string][]string{
 	"Douglas Rummel": {
 		"Is your gear ratio out of order?",
 		"The idea is that you get good.",
-		//"Have you tried using Processing?",
 		"Artificial intelligence will always defeat natural stupidity.",
 	},
 	"Bonnie Flint": {
