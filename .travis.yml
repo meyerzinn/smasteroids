@@ -1,6 +1,6 @@
 language: go
 go:
-- master
+- 1.11.4
 sudo: required
 services:
 - docker
