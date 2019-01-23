@@ -1,14 +1,14 @@
 package scenes
 
 import (
+	"github.com/20zinnm/smasteroids/assets"
+	"github.com/20zinnm/smasteroids/smasteroids"
+	"github.com/20zinnm/smasteroids/sprites"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"github.com/jakecoffman/cp"
-	"gitlab.com/meyerzinn/smasteroids/assets"
-	"gitlab.com/meyerzinn/smasteroids/smasteroids"
-	"gitlab.com/meyerzinn/smasteroids/sprites"
 	"golang.org/x/image/colornames"
 	"image/color"
 	"math"

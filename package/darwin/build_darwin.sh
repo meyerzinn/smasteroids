@@ -21,7 +21,7 @@ sed 's/SHORT_VERSION/'`git describe --abbrev=0 | sed 's/[^0-9\.]*//g'`'/g' Conte
 # Build SMasteroids or copy if argument is passed in
 if [[ $1 == "" ]]; then
     # Build the binary into the contents executable
-    go build -o ${OUTPUT}/Contents/MacOS/SMasteroids gitlab.com/meyerzinn/smasteroids
+    go build -o ${OUTPUT}/Contents/MacOS/SMasteroids github.com/20zinnm/smasteroids
 else
     # Ensure the folder exists
     mkdir -p ${OUTPUT}/Contents/MacOS

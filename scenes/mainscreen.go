@@ -2,11 +2,11 @@ package scenes
 
 import (
 	"fmt"
+	"github.com/20zinnm/smasteroids/assets"
+	"github.com/20zinnm/smasteroids/smasteroids"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
-	"gitlab.com/meyerzinn/smasteroids/assets"
-	"gitlab.com/meyerzinn/smasteroids/smasteroids"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 	"sync/atomic"

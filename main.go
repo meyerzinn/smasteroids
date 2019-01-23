@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/20zinnm/smasteroids/scenes"
+	"github.com/20zinnm/smasteroids/sprites"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"gitlab.com/meyerzinn/smasteroids/scenes"
-	"gitlab.com/meyerzinn/smasteroids/sprites"
 	"golang.org/x/image/colornames"
 	"math"
 	"math/rand"

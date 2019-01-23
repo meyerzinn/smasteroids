@@ -1,4 +1,4 @@
-module gitlab.com/meyerzinn/smasteroids
+module github.com/20zinnm/smasteroids
 
 require (
 	github.com/akavel/rsrc v0.0.0-20170831122431-f6a15ece2cfd // indirect

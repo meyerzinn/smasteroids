@@ -185,7 +185,7 @@ var Levels = []Level{
 					Fire:         time.Second,
 					BulletDamage: 2,
 				},
-			})...
+			})...,
 		),
 	},
 	{

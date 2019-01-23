@@ -1,10 +1,10 @@
 package scenes
 
 import (
+	"github.com/20zinnm/smasteroids/assets"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
-	"gitlab.com/meyerzinn/smasteroids/assets"
 	"golang.org/x/image/colornames"
 	"sync/atomic"
 	"time"
