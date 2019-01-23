@@ -16,8 +16,6 @@ before_deploy:
 - mkdir build
 - mkdir package/build
 - cd build
-- go get github.com/gobuffalo/packr
-- packr
 - go get github.com/karalabe/xgo
 - xgo -go 1.11.4 --targets=windows/amd64,darwin/amd64 -out smasteroids -ldflags "-X
   github.com/20zinnm/smasteroids/smasteroids.version=$TRAVIS_TAG" gitlab.com/meyerzinn/smasteroids
