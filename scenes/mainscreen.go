@@ -71,8 +71,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	// Show controls message for all currently joined players.
 	// > Show labels.
 	s.controlsMessage.Clear()
-	_, _ = fmt.Fprintln(s.controlsMessage, "")
-	_, _ = fmt.Fprintln(s.controlsMessage, "")
+	_, _ = fmt.Fprintln(s.controlsMessage, "Controls:")
 	for _, l := range controlsLabels {
 		_, _ = fmt.Fprintln(s.controlsMessage, l)
 	}
