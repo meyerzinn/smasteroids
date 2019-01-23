@@ -1,46 +1,37 @@
 language: go
 go:
-  - master
+- master
 sudo: required
 services:
-  - docker
-
+- docker
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install libasound2-dev alsa-utils alsa-oss
-  - sudo apt-get install libgl1-mesa-dev xorg-dev
-
+- sudo apt-get update -qq
+- sudo apt-get install libasound2-dev alsa-utils alsa-oss
+- sudo apt-get install libgl1-mesa-dev xorg-dev
 install:
-  - go get -t -v ./pkg/...
-
+- go get -t -v ./pkg/...
 script:
-  - go test ./pkg/... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=github.com/20zinnm/smasteroids/...
-
+- go test ./pkg/... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=github.com/20zinnm/smasteroids/...
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
-# Cross build the binaries before deploy
+- bash <(curl -s https://codecov.io/bash)
 before_deploy:
-  - mkdir build
-  - mkdir package/build
-  - cd build
-  - go get github.com/gobuffalo/packr
-  - packr
-  - go get github.com/karalabe/xgo
-  - xgo -go 1.11.4 --targets=windows/amd64,darwin/amd64 -out smasteroids -ldflags "-X github.com/20zinnm/smasteroids/smasteroids.version=$TRAVIS_TAG" gitlab.com/meyerzinn/smasteroids
-
-  # Build the darwin bundle
-  - cd ../package/darwin
-  - ./build_darwin.sh ../../build/smasteroids-darwin-10.6-amd64
-
-  # Build (rename) the windows bundle
-  - cd ../windows
-  - ./build_windows.sh ../../build/smasteroids-windows-4.0-amd64.exe
-  - cd ../../ # Reset to root
-
+- mkdir build
+- mkdir package/build
+- cd build
+- go get github.com/gobuffalo/packr
+- packr
+- go get github.com/karalabe/xgo
+- xgo -go 1.11.4 --targets=windows/amd64,darwin/amd64 -out smasteroids -ldflags "-X
+  github.com/20zinnm/smasteroids/smasteroids.version=$TRAVIS_TAG" gitlab.com/meyerzinn/smasteroids
+- cd ../package/darwin
+- "./build_darwin.sh ../../build/smasteroids-darwin-10.6-amd64"
+- cd ../windows
+- "./build_windows.sh ../../build/smasteroids-windows-4.0-amd64.exe"
+- cd ../../
 deploy:
   provider: releases
   api_key:
+    secure: ltFOMbGhmsVuvE4xrT2JfLih5wFPw+Sha5V/c3ShBD65bgglSjTR2NJNdiEs1RGyykUCn7GOpPP52PKXSy1tzhYQCthxE8BJqPwLvQzgcZH8x2TGBQpK6PJY4xNp9YN+yhsjPAZ1OwtySXAHf7wZ0/nLEHSn2hSWEPpU8I+ar952HmvIuQUTZKnD8uJA/zDtlkJf8OF2WWeBp6ZxYk4aenPWSMlVVKCS3+mxZEFb4/fszZSRxPYcUq6FzSDahOkXj2Zxjvlijpkfdknv5Ar1XCBw2Dks2nuDzpRFLPoDvLiZ8V+ZNDsTPtR10gMCg+KLb6Ebl8Vv1BapC73YZy7yd9mpVaUltfXJM5Fthq1kV0kHb36hV0/UJzaH8BGhk1Ww5oABVYuxPIsTEWS3Xz0xOtc0UrXRwJ/+BVYYyBKyRMTdxtPI2FWEJdZBaA4OZH1W5l/0VuNuq8Af2AoNJcp9LIwEH/y0uwoVjLTJg7pdBOai0Le24fO95v3fVD5yyvgDd0bKyu73zMP2YBwCcYzY6kOgo0owIj3TUUByPePY4XkOvDDxkSaVTt2lYdZNsMXWdmHr9cCI3EYDPEZN4RfZLWi4oxCXymXrEaVvK/MdYgDWKbemqVmrvTp0E117XUElVABK7SdOEWGPoQ+QSvVqp+9dL8Gf/MHoV1LfjnukkIc=
   file: package/build/*
   file_glob: true
   skip_cleanup: true
