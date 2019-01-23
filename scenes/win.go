@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const winFooterMessageText = "Press [SPACE] to start again."
+const winFooterMessageText = "Press [Boost] to start again."
 
 type WinScene struct {
 	titleMessage *text.Text
@@ -22,7 +22,7 @@ type WinScene struct {
 }
 
 func (s *WinScene) Render(win *pixelgl.Window) {
-	if win.Pressed(pixelgl.KeySpace) {
+	if Players[0].Boost.GetInput(win) {
 		s.Destroy()
 		current = Play()
 	}

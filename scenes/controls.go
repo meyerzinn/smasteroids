@@ -97,9 +97,14 @@ type JoystickAxisInputMethod struct {
 func (im JoystickAxisInputMethod) GetInput(win *pixelgl.Window) bool {
 	extent := win.JoystickAxis(im.Joystick, im.Axis)
 	if math.Abs(extent) > im.Threshold {
-		return !im.Inverse
+		if im.Inverse && extent < 0 {
+			return true
+		}
+		if !im.Inverse && extent > 0 {
+			return true
+		}
 	}
-	return im.Inverse
+	return false
 }
 
 func (im JoystickAxisInputMethod) String() string {

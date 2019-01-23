@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const LevelTitleDelay = 4 * time.Second
+const LevelTitleDelay = 3 * time.Second
 
 type LevelTitleScene struct {
 	levelIndex int
