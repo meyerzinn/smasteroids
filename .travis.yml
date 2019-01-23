@@ -18,7 +18,7 @@ before_deploy:
 - cd build
 - go get github.com/karalabe/xgo
 - xgo --targets=windows/amd64,darwin/amd64 -out smasteroids -ldflags "-X
-  github.com/20zinnm/smasteroids/smasteroids.version=$TRAVIS_TAG" gitlab.com/meyerzinn/smasteroids
+  github.com/20zinnm/smasteroids/smasteroids.version=$TRAVIS_TAG" github.com/20zinnm/smasteroids
 - cd ../package/darwin
 - "./build_darwin.sh ../../build/smasteroids-darwin-10.6-amd64"
 - cd ../windows
