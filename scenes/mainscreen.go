@@ -71,9 +71,9 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	// Show controls message for all currently joined players.
 	// > Show labels.
 	s.controlsMessage.Clear()
-	_, _ = fmt.Fprintln(s.controlsMessage, "Controls:")
+	fmt.Fprintln(s.controlsMessage, "Controls:")
 	for _, l := range controlsLabels {
-		_, _ = fmt.Fprintln(s.controlsMessage, l)
+		fmt.Fprintln(s.controlsMessage, l)
 	}
 	s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
 	for i, scheme := range Players {
