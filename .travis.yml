@@ -8,10 +8,8 @@ before_install:
 - sudo apt-get update -qq
 - sudo apt-get install libasound2-dev alsa-utils alsa-oss
 - sudo apt-get install libgl1-mesa-dev xorg-dev
-install:
-- go get -t -v ./pkg/...
 script:
-- go test ./pkg/... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=github.com/20zinnm/smasteroids/...
+- go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=github.com/20zinnm/smasteroids/...
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 before_deploy:
