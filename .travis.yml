@@ -1,0 +1,46 @@
+language: go
+go:
+  - master
+sudo: required
+services:
+  - docker
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install libasound2-dev alsa-utils alsa-oss
+  - sudo apt-get install libgl1-mesa-dev xorg-dev
+
+install:
+  - go get -t -v ./pkg/...
+
+script:
+  - go test ./pkg/... -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=gitlab.com/meyerzinn/smasteroids/...
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+# Cross build the binaries before deploy
+before_deploy:
+  - mkdir build
+  - mkdir package/build
+  - cd build
+  - go get github.com/karalabe/xgo
+  - xgo -go 1.11.4 --targets=windows/amd64,darwin/amd64 -out smasteroids -ldflags "-X gitlab.com/meyerzinn/smasteroids/smasteroids.version=$TRAVIS_TAG" gitlab.com/meyerzinn/smasteroids
+
+  # Build the darwin bundle
+  - cd ../package/darwin
+  - ./build_darwin.sh ../../build/smasteroids-darwin-10.6-amd64
+
+  # Build (rename) the windows bundle
+  - cd ../windows
+  - ./build_windows.sh ../../build/smasteroids-windows-4.0-amd64.exe
+  - cd ../../ # Reset to root
+
+deploy:
+  provider: releases
+  api_key:
+  file: package/build/*
+  file_glob: true
+  skip_cleanup: true
+  on:
+    tags: true
