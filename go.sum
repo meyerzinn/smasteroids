@@ -1,8 +1,6 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Masterminds/semver v1.4.2/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
 github.com/ajg/form v0.0.0-20160822230020-523a5da1a92f/go.mod h1:uL1WgH+h2mgNtvBq0339dVnzXdBETtL2LeUXaIv25UY=
-github.com/akavel/rsrc v0.0.0-20170831122431-f6a15ece2cfd h1:yumR8733CaQ3P76MFbIbBKdrJmy4EqnQ5DIhqq8gq2Q=
-github.com/akavel/rsrc v0.0.0-20170831122431-f6a15ece2cfd/go.mod h1:2+aQMrY0hBFBaIr2xxnZ/ctfwnYmMRMbTczYLAC34v4=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=
 github.com/cockroachdb/cockroach-go v0.0.0-20181001143604-e0a95dfd547c/go.mod h1:XGLbWH/ujMcbPbhZq52Nv6UrCghb1yGn//133kEsvDk=
@@ -20,11 +18,8 @@ github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 h1:FvZ0mIGh6b3kOITxUn
 github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380/go.mod h1:zqnPFFIuYFFxl7uH2gYByJwIVKG7fRqlqQCbzAnHs9g=
 github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 h1:baVdMKlASEHrj19iqjARrPbaRisD7EuZEVJj6ZMLl1Q=
 github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3/go.mod h1:VEPNJUlxl5KdWjDvz6Q1l+rJlxF2i6xqDeGuGAxa87M=
-github.com/faiface/pixel v0.8.0/go.mod h1:CEUU/s9E82Kqp01Boj1O67KnBskqiLghANqvUJGgDAM=
-github.com/faiface/pixel v0.8.1-0.20190110195620-a1bbfa3020c8 h1:qJ62YFTI4qFibY3QAjNvmFQS5cVYNKFb7OsfDCXePyM=
-github.com/faiface/pixel v0.8.1-0.20190110195620-a1bbfa3020c8/go.mod h1:CEUU/s9E82Kqp01Boj1O67KnBskqiLghANqvUJGgDAM=
-github.com/faiface/pixel v0.8.1-0.20190121221830-9e0f11abbb30 h1:m2v9udkZpM7l/x9vEReavyYSky47On4fJJvRKmons/c=
-github.com/faiface/pixel v0.8.1-0.20190121221830-9e0f11abbb30/go.mod h1:CEUU/s9E82Kqp01Boj1O67KnBskqiLghANqvUJGgDAM=
+github.com/faiface/pixel v0.8.1-0.20190122215308-f1ad821f1aec h1:Cllc5kAAFz6Op5cWK8zuQDdtU13JG5GrXDS0/5EvwC0=
+github.com/faiface/pixel v0.8.1-0.20190122215308-f1ad821f1aec/go.mod h1:CEUU/s9E82Kqp01Boj1O67KnBskqiLghANqvUJGgDAM=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fatih/structs v1.0.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga6PJ7M=
 github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga6PJ7M=
@@ -246,10 +241,6 @@ github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNx
 github.com/mattn/go-sqlite3 v1.9.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/microcosm-cc/bluemonday v1.0.1/go.mod h1:hsXNsILzKxV+sX77C5b8FSuKF00vh2OMYv+xgHpAMF4=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
-github.com/mitchellh/gox v0.4.0 h1:lfGJxY7ToLJQjHHwi0EX6uYBdK78egf954SQl13PQJc=
-github.com/mitchellh/gox v0.4.0/go.mod h1:Sd9lOJ0+aimLBi73mGofS1ycjY8lL3uZM3JPS42BGNg=
-github.com/mitchellh/iochan v1.0.0 h1:C+X3KsSTLFVBr/tK1eYN/vs4rJcvsiLU338UhYPJWeY=
-github.com/mitchellh/iochan v1.0.0/go.mod h1:JwYml1nuB7xOzsp52dPpHFffvOCDupsG0QubkSMEySY=
 github.com/mitchellh/mapstructure v1.0.0/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/monoculum/formam v0.0.0-20180901015400-4e68be1d79ba/go.mod h1:RKgILGEJq24YyJ2ban8EO0RUVSJlF1pGsEvoLEACr/Q=

@@ -17,30 +17,57 @@ var (
 
 	activeJoystickers = make(map[pixelgl.Joystick]struct{})
 
-	joystickControlSchemes = map[string]ControlScheme{
-		"8Bitdo SFC30 GamePad": {
-			Left:   JoystickAxisInputMethod{Axis: 0, Inverse: true, Threshold: .1, Alias: "LEFT"},
-			Right:  JoystickAxisInputMethod{Axis: 0, Inverse: false, Threshold: .1, Alias: "RIGHT"},
-			Shoot:  JoystickButtonInputMethod{Button: 7, Alias: "R"},
-			Boost:  JoystickButtonInputMethod{Button: 3, Alias: "X"},
-			Thrust: JoystickButtonInputMethod{Button: 0, Alias: "A"},
-		},
+	joystickControlSchemes = map[string]JoystickControlSchemeFactory{
+		"8Bitdo SFC30 GamePad": make8BitdoSFC30GamePadControlScheme,
 	}
 )
 
-//type AnyInputMethod struct {
-//	Methods []InputMethod
-//}
-//
-//func (im AnyInputMethod) GetInput(win *pixelgl.Window) bool {
-//	panic("implement me")
-//}
-//
-//func (im AnyInputMethod) String() string {
-//	panic("implement me")
-//}
-//
-//func AnyInput(methods ...InputMethod) InputMethod
+type JoystickControlSchemeFactory func(pixelgl.Joystick) ControlScheme
+
+func make8BitdoSFC30GamePadControlScheme(joystick pixelgl.Joystick) ControlScheme {
+	return ControlScheme{
+		Left:   JoystickAxisInputMethod{Joystick: joystick, Axis: 0, Inverse: true, Threshold: .1, Alias: "LEFT"},
+		Right:  JoystickAxisInputMethod{Joystick: joystick, Axis: 0, Inverse: false, Threshold: .1, Alias: "RIGHT"},
+		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 0, Alias: "A"},
+		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 7, Alias: "R"},
+		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 6, Alias: "L"},
+	}
+}
+
+type AnyInputMethod struct {
+	Methods []InputMethod
+}
+
+func (im AnyInputMethod) GetInput(win *pixelgl.Window) bool {
+	for i := 0; i < len(im.Methods); i++ {
+		if im.Methods[i].GetInput(win) {
+			return true
+		}
+	}
+	return false
+}
+
+func (im AnyInputMethod) String() string {
+	switch len(im.Methods) {
+	case 0:
+		return ""
+	case 1:
+		return im.Methods[0].String()
+	default:
+		const deliminator = " | "
+		var val string
+		for _, method := range im.Methods {
+			val += method.String() + " | "
+		}
+		return val[:len(val)-3]
+	}
+}
+
+func AnyInput(methods ...InputMethod) InputMethod {
+	return AnyInputMethod{
+		Methods: methods,
+	}
+}
 
 type ControlScheme struct {
 	Thrust, Left, Right, Shoot, Boost InputMethod

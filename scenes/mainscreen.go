@@ -36,18 +36,28 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		TransitionTo(Play())
 	}
 
+	// Remove non-primary players pressing boost.
+	for i := len(Players) - 1; i > 0; i-- {
+		if Players[i].Boost.GetInput(win) {
+			copy(Players[i:], Players[i+1:])
+			Players[len(Players)-1] = ControlScheme{}
+			Players = Players[:len(Players)-1]
+		}
+	}
+
 	// Add new players
 	for joystick := pixelgl.Joystick1; joystick < pixelgl.Joystick16 && len(Players) < MaxPlayers; joystick++ {
 		if win.JoystickPresent(joystick) {
 			if _, ok := activeJoystickers[joystick]; !ok {
 				if scheme, ok := joystickControlSchemes[win.JoystickName(joystick)]; ok {
 					// we have a known joystick, add the player
-					Players = append(Players, scheme)
+					Players = append(Players, scheme(joystick))
 					activeJoystickers[joystick] = struct{}{}
 				}
 			}
 		}
 	}
+
 	if len(Players) == 0 {
 		Players = append(Players, defaultKeyboardControls)
 	}
