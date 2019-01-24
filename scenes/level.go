@@ -222,6 +222,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 	if len(s.enemies) == 0 || (win.Pressed(pixelgl.KeyJ) && win.Pressed(pixelgl.KeyA) && win.Pressed(pixelgl.KeyN) && win.Pressed(pixelgl.KeyK)) { // all enemies dead or cheatcode active
 		if s.levelIndex == len(smasteroids.Levels)-1 {
 			TransitionTo(Win())
+			return
 		} else {
 			TransitionTo(TitleScene(s.levelIndex + 1))
 			return
