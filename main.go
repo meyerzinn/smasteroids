@@ -1,15 +1,16 @@
 package main
 
 import (
+	"math"
+	"math/rand"
+	"time"
+
 	"github.com/20zinnm/smasteroids/assets"
 	"github.com/20zinnm/smasteroids/scenes"
 	"github.com/20zinnm/smasteroids/sprites"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
-	"math"
-	"math/rand"
-	"time"
 )
 
 //go:generate packr
@@ -35,7 +36,6 @@ func run() {
 		Undecorated: true,
 		Monitor:     monitor,
 		Icon:        []pixel.Picture{assets.Icon},
-
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
@@ -61,7 +61,7 @@ func run() {
 				monitor = m
 				win.SetMonitor(monitor)
 				width, height = monitor.Size()
-				win.SetBounds(pixel.R(0, 0, width, height), )
+				win.SetBounds(pixel.R(0, 0, width, height))
 				win.SetMatrix(pixel.IM.Scaled(pixel.ZV, width/scenes.CanvasBounds.W()))
 			}
 		}
