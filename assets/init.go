@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/image/font"
 	"image"
+	_ "image/png"
 )
 
 var (
@@ -16,6 +17,10 @@ var (
 	FontInterface *text.Atlas
 	FontSubtitle  *text.Atlas
 	FontLabel     *text.Atlas
+)
+
+var (
+	Icon pixel.Picture
 )
 
 func init() {
@@ -49,6 +54,11 @@ func init() {
 		panic(errors.Wrap(err, "initializing label font face"))
 	}
 	FontLabel = text.NewAtlas(label, text.ASCII)
+
+	Icon, err = loadPicture(assets, "icon.png")
+	if err != nil {
+		panic(errors.Wrap(err, "loading icon"))
+	}
 }
 
 func loadTTF(raw []byte, size float64) (font.Face, error) {

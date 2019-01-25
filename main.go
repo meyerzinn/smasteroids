@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/20zinnm/smasteroids/assets"
 	"github.com/20zinnm/smasteroids/scenes"
 	"github.com/20zinnm/smasteroids/sprites"
 	"github.com/faiface/pixel"
@@ -26,19 +27,23 @@ func run() {
 			monitor = m
 		}
 	}
+	width, height := monitor.Size()
 	cfg := pixelgl.WindowConfig{
-		Title:  "SMasteroids",
-		Bounds: pixel.R(0, 0, 1920, 1080),
-		VSync:  true,
-		//Resizable: true,
-		Monitor: monitor,
+		Title:       "SMasteroids",
+		Bounds:      pixel.R(0, 0, width, height),
+		VSync:       true,
+		Undecorated: true,
+		Monitor:     monitor,
+		Icon:        []pixel.Picture{assets.Icon},
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
 	if err != nil {
 		panic(err)
 	}
+	win.SetSmooth(true)
 	win.SetCursorVisible(false)
+	win.MouseScroll()
 	// initialize sprites
 	sprites.Init()
 	// set up canvas bounds
@@ -50,15 +55,15 @@ func run() {
 	defer ticker.Stop()
 	for !win.Closed() {
 		for _, m := range pixelgl.Monitors() {
-			xp, _ := m.PhysicalSize()
-			xo, _ := monitor.PhysicalSize()
-			if xp > xo {
+			xwidth, _ := m.Size()
+			if xwidth > width {
 				monitor = m
+				win.SetMonitor(monitor)
+				width, height = monitor.Size()
+				win.SetBounds(pixel.R(0, 0, width, height), )
+				win.SetMatrix(pixel.IM.Scaled(pixel.ZV, width/scenes.CanvasBounds.W()))
 			}
 		}
-		win.SetMonitor(monitor)
-		w, _ := monitor.Size()
-		win.SetMatrix(pixel.IM.Scaled(pixel.ZV, w/scenes.CanvasBounds.W()))
 		win.Clear(colornames.Black)
 		scenes.Render(win)
 		if win.Pressed(pixelgl.KeyEscape) {
