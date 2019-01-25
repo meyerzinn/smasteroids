@@ -13,8 +13,6 @@ import (
 
 //go:generate packr
 
-var enableVSync bool
-
 func init() {
 	rand.Seed(int64(time.Now().Nanosecond()))
 }
@@ -31,7 +29,7 @@ func run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "SMasteroids",
 		Bounds: pixel.R(0, 0, 1920, 1080),
-		VSync:  enableVSync,
+		VSync:  true,
 		//Resizable: true,
 		Monitor: monitor,
 	}
