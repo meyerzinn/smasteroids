@@ -122,7 +122,7 @@ func (s *MainscreenScene) Destroy() {
 
 func Start() Scene {
 	titleMessage := text.New(pixel.V(0, 0), assets.FontTitle)
-	_, _ = titleMessage.WriteString("SMasteroids")
+	_, _ = titleMessage.WriteString("Crewstroids")
 	controlsMessage := text.New(pixel.ZV, assets.FontInterface)
 	footerMessage := text.New(pixel.ZV, assets.FontInterface)
 	_, _ = footerMessage.WriteString(footerMessageText)
