@@ -45,7 +45,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		}
 	}
 
-	// Add new players
+	// Add new players with joysticks.
 	for joystick := pixelgl.Joystick1; joystick < pixelgl.Joystick16 && len(Players) < MaxPlayers; joystick++ {
 		if win.JoystickPresent(joystick) {
 			if _, ok := activeJoystickers[joystick]; !ok {
@@ -58,6 +58,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		}
 	}
 
+	// Default controls is the keyboard scheme.
 	if len(Players) == 0 {
 		Players = append(Players, defaultKeyboardControls)
 	}
