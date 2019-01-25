@@ -38,11 +38,11 @@ func make8BitdoSFC30GamePadControlScheme(joystick pixelgl.Joystick) ControlSchem
 
 func makeJoyConRControlScheme(joystick pixelgl.Joystick) ControlScheme {
 	return ControlScheme{
-		Left:   JoystickButtonInputMethod{Joystick: joystick, Button: 19, Alias: "L"},
-		Right:  JoystickButtonInputMethod{Joystick: joystick, Button: 17, Alias: "R"},
-		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 5, Alias: "SR"},
-		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 1, Alias: "X"},
-		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 4, Alias: "SL"},
+		Left:   JoystickButtonInputMethod{Joystick: joystick, Button: 19, Alias: "LEFT"},
+		Right:  JoystickButtonInputMethod{Joystick: joystick, Button: 17, Alias: "RIGHT"},
+		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 1, Alias: "X"},
+		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 0, Alias: "A"},
+		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 11, Alias: "STICK"},
 	}
 }
 
