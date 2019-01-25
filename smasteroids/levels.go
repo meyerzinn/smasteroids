@@ -2,7 +2,7 @@ package smasteroids
 
 import "time"
 
-var lowerSchoolEnemy = Ship{
+var mondayEnemy = Ship{
 	Health:       10,
 	Thrust:       50,
 	Turn:         2,
@@ -10,15 +10,15 @@ var lowerSchoolEnemy = Ship{
 	BulletDamage: 2,
 }
 
-var middleSchoolEnemy = Ship{
+var tuesdayEnemy = Ship{
 	Health:       15,
 	Thrust:       60,
-	Turn:         2.5,
+	Turn:         2.25,
 	Fire:         time.Second / 2,
 	BulletDamage: 4,
 }
 
-var biologyEnemy = Ship{
+var wednesdayEnemy = Ship{
 	Health:       20,
 	Thrust:       75,
 	Turn:         3,
@@ -26,7 +26,7 @@ var biologyEnemy = Ship{
 	BulletDamage: 6,
 }
 
-var chemistryEnemy = Ship{
+var matrimonialEnemy = Ship{
 	Health:       30,
 	Thrust:       80,
 	Turn:         3.25,
@@ -34,131 +34,155 @@ var chemistryEnemy = Ship{
 	BulletDamage: 8,
 }
 
-var loraxEnemy = Ship{
+var parentsEnemy = Ship{
 	Health:       75,
-	Thrust:       50,
+	Thrust:       75,
 	Turn:         3.5,
 	Fire:         time.Second / 3 * 2,
 	BulletDamage: 15,
 }
 
-var physicsEnemy = Ship{
-	Health:       50,
-	Thrust:       100,
-	Turn:         3.75,
-	Fire:         time.Second / 3,
-	BulletDamage: 15,
+var minorParentsEnemy = Ship{
+	Health:       25,
+	Thrust:       50,
+	Turn:         3,
+	Fire:         time.Second / 10,
+	BulletDamage: 4,
 }
 
-var administrationEnemy = Ship{
+//var loraxEnemy = Ship{
+//	Health:       75,
+//	Thrust:       50,
+//	Turn:         3.5,
+//	Fire:         time.Second / 3 * 2,
+//	BulletDamage: 15,
+//}
+//
+//var physicsEnemy = Ship{
+//	Health:       50,
+//	Thrust:       100,
+//	Turn:         3.75,
+//	Fire:         time.Second / 3,
+//	BulletDamage: 15,
+//}
+//
+var promisedLandEnemy = Ship{
 	Health:       100,
 	Thrust:       120,
 	Turn:         4.25,
-	Fire:         10,
+	Fire:         time.Second / 50,
 	BulletDamage: 10,
 }
 
-var Levels = []Level{
+var Levels []Level = []Level{
 	{
-		Name: "Lower School",
+		Name: "Monday",
 		Player: Ship{
 			Health:       20,
 			Thrust:       100,
-			Turn:         3,
+			Turn:         2.5,
 			Fire:         time.Second / 3,
 			BulletDamage: 5,
 		},
 		Enemies: []Enemy{
 			{
-				Name: "Carrio",
-				Ship: lowerSchoolEnemy,
+				Name: "Jamie",
+				Ship: mondayEnemy,
 			},
 			{
-				Name: "Materre",
-				Ship: lowerSchoolEnemy,
+				Name: "Jackson",
+				Ship: mondayEnemy,
 			},
 			{
-				Name: "Pigg",
-				Ship: lowerSchoolEnemy,
+				Name: "Ajay",
+				Ship: mondayEnemy,
 			},
 			{
-				Name: "Wetzel",
-				Ship: lowerSchoolEnemy,
-			},
-			{
-				Name: "Dillon",
-				Ship: lowerSchoolEnemy,
+				Name: "Karen",
+				Ship: mondayEnemy,
 			},
 		},
 	},
 	{
-		Name: "Middle School",
+		Name: "Tuesday",
 		Player: Ship{
 			Health:       30,
 			Thrust:       120,
-			Turn:         3,
+			Turn:         2.75,
 			Fire:         time.Second / 3,
 			BulletDamage: 7.5,
 		},
 		Enemies: []Enemy{
 			{
-				Name: "Dillon",
-				Ship: middleSchoolEnemy,
+				Name: "Caroline",
+				Ship: tuesdayEnemy,
 			},
 			{
-				Name: "Hoehn",
-				Ship: middleSchoolEnemy,
+				Name: "Mason",
+				Ship: tuesdayEnemy,
 			},
 			{
-				Name: "Kiehn",
-				Ship: middleSchoolEnemy,
+				Name: "Madison",
+				Ship: tuesdayEnemy,
 			},
 			{
-				Name: "Smith",
-				Ship: middleSchoolEnemy,
+				Name: "Emma the Younger",
+				Ship: Ship{
+					Health: 5, Thrust: 100, Turn: 3, Fire: time.Second, BulletDamage: 6,
+				},
 			},
 			{
-				Name: "Mead",
-				Ship: middleSchoolEnemy,
+				Name: "Shayle Cruz",
+				Ship: tuesdayEnemy,
+			},
+			{
+				Name: "Lahari",
+				Ship: tuesdayEnemy,
 			},
 		},
 	},
 	{
-		Name: "The Biologists",
+		Name: "Wednesday",
 		Player: Ship{
-			Health:       50,
+			Health:       60,
 			Thrust:       130,
 			Turn:         3,
 			Fire:         time.Second / 4,
 			BulletDamage: 10,
 		},
-		Enemies: append([]Enemy{
+		Enemies: []Enemy{
 			{
-				Name: "Flint",
-				Ship: biologyEnemy,
+				Name: "Lahari but again",
+				Ship: wednesdayEnemy,
 			},
 			{
-				Name: "Israni",
-				Ship: biologyEnemy,
+				Name: "Meyer",
+				Ship: wednesdayEnemy,
 			},
 			{
-				Name: "Adame",
-				Ship: biologyEnemy,
+				Name: "Mia",
+				Ship: wednesdayEnemy,
+			},
+			{
+				Name: "Mikah",
+				Ship: wednesdayEnemy,
+			},
+			{
+				Name: "Simone",
+				Ship: wednesdayEnemy,
+			},
+			{
+				Name: "Alice",
+				Ship: wednesdayEnemy,
+			},
+			{
+				Name: "Emma the Elder",
+				Ship: wednesdayEnemy,
 			},
 		},
-			mult(2, Enemy{
-				Name: "Skeleton",
-				Ship: Ship{
-					Health:       10,
-					Thrust:       80,
-					Turn:         3.75,
-					Fire:         time.Second / 2,
-					BulletDamage: 7.5,
-				},
-			})...),
 	},
 	{
-		Name: "The Chemists",
+		Name: "The Realm of Matrimonial Incongruity",
 		Player: Ship{
 			Health:       60,
 			Thrust:       140,
@@ -166,30 +190,16 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 10,
 		},
-		Enemies: append([]Enemy{
-			{
-				Name: "Macaraeg",
-				Ship: chemistryEnemy,
-			},
-			{
-				Name: "Owens",
-				Ship: chemistryEnemy,
-			},
+		Enemies: []Enemy{
+			{Name: "Fiona", Ship: matrimonialEnemy},
+			{Name: "Juhi", Ship: matrimonialEnemy},
+			{Name: "Hailey", Ship: matrimonialEnemy},
+			{Name: "Helena", Ship: matrimonialEnemy},
+			{Name: "Maisy", Ship: matrimonialEnemy},
 		},
-			mult(8, Enemy{
-				Name: "VisorGogs",
-				Ship: Ship{
-					Health:       10,
-					Thrust:       100,
-					Turn:         3.5,
-					Fire:         time.Second,
-					BulletDamage: 2,
-				},
-			})...,
-		),
 	},
 	{
-		Name: "The Lorax",
+		Name: "Meet the Parents",
 		Player: Ship{
 			Health:       80,
 			Thrust:       150,
@@ -197,26 +207,39 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 15,
 		},
-		Enemies: append([]Enemy{
+		Enemies: []Enemy{
 			{
-				Name: "Northcut",
-				Ship: loraxEnemy,
+				Name: "Ello",
+				Ship: minorParentsEnemy,
+			},
+			{
+				Name: "Wheezy",
+				Ship: minorParentsEnemy,
+			},
+			{
+				Name: "Sinny",
+				Ship: minorParentsEnemy,
+			},
+			{
+				Name: "Eloise",
+				Ship: parentsEnemy,
+			},
+			{
+				Name: "Annie",
+				Ship: parentsEnemy,
+			},
+			{
+				Name: "Gabe",
+				Ship: parentsEnemy,
+			},
+			{
+				Name: "Carolina",
+				Ship: parentsEnemy,
 			},
 		},
-			mult(15, Enemy{
-				Name: "Tree",
-				Ship: Ship{
-					Health:       1,
-					Thrust:       20,
-					Turn:         5,
-					Fire:         time.Second / 3,
-					BulletDamage: 1,
-				},
-			})...,
-		),
 	},
 	{
-		Name: "The Physicists",
+		Name: "Props",
 		Player: Ship{
 			Health:       100,
 			Thrust:       150,
@@ -224,42 +247,39 @@ var Levels = []Level{
 			Fire:         time.Second / 6,
 			BulletDamage: 5,
 		},
-		Enemies: []Enemy{
-			{
-				Name: "Houpt",
-				Ship: physicsEnemy,
+		Enemies: append(mult(10, Enemy{
+			Name: "Prop",
+			Ship: Ship{
+				Health:       100,
+				Thrust:       20,
+				Turn:         3,
+				Fire:         time.Second * 5,
+				BulletDamage: 20,
 			},
-			{
-				Name: "Hoehn",
-				Ship: physicsEnemy,
+		}), Enemy{
+			Name: "Catherine",
+			Ship: Ship{
+				Health:       50,
+				Thrust:       100,
+				Turn:         3.75,
+				Fire:         time.Second / 3,
+				BulletDamage: 15,
 			},
-			{
-				Name: "Balog",
-				Ship: physicsEnemy,
-			},
-			{
-				Name: "Carron",
-				Ship: physicsEnemy,
-			},
-		},
+		}),
 	},
 	{
-		Name: "The Administration",
-		Player: Ship{
-			Health:       100,
-			Thrust:       150,
-			Turn:         3,
-			Fire:         10,
-			BulletDamage: 7.5,
+		"The Promised Land",
+		Ship{
+
 		},
-		Enemies: []Enemy{
+		[]Enemy{
 			{
-				Name: "Dini",
-				Ship: administrationEnemy,
+				Name: "Kallos",
+				Ship: promisedLandEnemy,
 			},
 			{
-				Name: "Igoe",
-				Ship: administrationEnemy,
+				Name: "Gray",
+				Ship: promisedLandEnemy,
 			},
 		},
 	},

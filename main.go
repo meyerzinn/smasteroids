@@ -27,7 +27,7 @@ func run() {
 		}
 	}
 	cfg := pixelgl.WindowConfig{
-		Title:     "SMasteroids",
+		Title:     "Crewstroids",
 		Bounds:    pixel.R(0, 0, 1920, 1080),
 		VSync:     true,
 		Resizable: true,
