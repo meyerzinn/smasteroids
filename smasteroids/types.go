@@ -30,7 +30,17 @@ type Level struct {
 	Enemies []Enemy
 }
 
-func mult(n int, enemy Enemy) (out []Enemy) {
+func multiple(ship Ship, names ...string) (out []Enemy) {
+	for _, name := range names {
+		out = append(out, Enemy{
+			Name: name,
+			Ship: ship,
+		})
+	}
+	return
+}
+
+func duplicate(n int, enemy Enemy) (out []Enemy) {
 	for i := 0; i < n; i++ {
 		out = append(out, enemy)
 	}

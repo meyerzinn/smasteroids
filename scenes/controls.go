@@ -15,10 +15,12 @@ var (
 		Shoot:  KeyboardInputMethod{Button: pixelgl.KeySpace},
 	}
 
-	activeJoystickers = make(map[pixelgl.Joystick]struct{})
+	playerJoysticks = make(map[int]pixelgl.Joystick)
+	joystickPlayers = make(map[pixelgl.Joystick]int)
 
 	joystickControlSchemes = map[string]JoystickControlSchemeFactory{
 		"8Bitdo SFC30 GamePad": make8BitdoSFC30GamePadControlScheme,
+		"Joy-Con (R)":          makeJoyConRControlScheme,
 	}
 )
 
@@ -31,6 +33,16 @@ func make8BitdoSFC30GamePadControlScheme(joystick pixelgl.Joystick) ControlSchem
 		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 0, Alias: "A"},
 		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 7, Alias: "R"},
 		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 6, Alias: "L"},
+	}
+}
+
+func makeJoyConRControlScheme(joystick pixelgl.Joystick) ControlScheme {
+	return ControlScheme{
+		Left:   JoystickButtonInputMethod{Joystick: joystick, Button: 19, Alias: "L"},
+		Right:  JoystickButtonInputMethod{Joystick: joystick, Button: 17, Alias: "R"},
+		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 5, Alias: "SR"},
+		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 1, Alias: "X"},
+		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 4, Alias: "SL"},
 	}
 }
 

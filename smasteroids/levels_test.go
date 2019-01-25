@@ -8,15 +8,18 @@ import (
 
 func TestLevels(t *testing.T) {
 	for i, level := range smasteroids.Levels {
+		assert.NotEmpty(t, level.Name, "level does not have a name")
 		if !testShip(t, level.Player) {
 			t.Errorf("levelIndex=%d player spec failed ship test", i)
 		}
-		for j, enemy := range level.Enemies {
-			if enemy.Name == "" {
-				t.Logf("levelIndex=%d enemyIndex=%d enemy has no name?", i, j)
-			}
-			if !testShip(t, enemy.Ship) {
-				t.Errorf("levelIndex=%d enemyIndex=%d enemy spec failed ship test", i, j)
+		if assert.NotEmpty(t, level.Enemies) {
+			for j, enemy := range level.Enemies {
+				if enemy.Name == "" {
+					t.Logf("levelIndex=%d enemyIndex=%d enemy has no name?", i, j)
+				}
+				if !testShip(t, enemy.Ship) {
+					t.Errorf("levelIndex=%d enemyIndex=%d enemy spec failed ship test", i, j)
+				}
 			}
 		}
 	}

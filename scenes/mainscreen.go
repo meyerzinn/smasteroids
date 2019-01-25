@@ -34,6 +34,7 @@ const joinText = "Connect another joystick to join."
 func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	if len(Players) > 0 && Players[0].Boost.GetInput(win) {
 		TransitionTo(Play())
+		return
 	}
 
 	// Remove non-primary players pressing boost.
@@ -42,17 +43,22 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 			copy(Players[i:], Players[i+1:])
 			Players[len(Players)-1] = ControlScheme{}
 			Players = Players[:len(Players)-1]
+			if joystick, ok := playerJoysticks[i]; ok {
+				delete(playerJoysticks, i)
+				delete(joystickPlayers, joystick)
+			}
 		}
 	}
 
 	// Add new players with joysticks.
 	for joystick := pixelgl.Joystick1; joystick < pixelgl.Joystick16 && len(Players) < MaxPlayers; joystick++ {
 		if win.JoystickPresent(joystick) {
-			if _, ok := activeJoystickers[joystick]; !ok {
+			if _, ok := joystickPlayers[joystick]; !ok {
 				if scheme, ok := joystickControlSchemes[win.JoystickName(joystick)]; ok {
 					// we have a known joystick, add the player
 					Players = append(Players, scheme(joystick))
-					activeJoystickers[joystick] = struct{}{}
+					playerJoysticks[len(Players)-1] = joystick
+					joystickPlayers[joystick] = len(Players) - 1
 				}
 			}
 		}

@@ -2,7 +2,7 @@ package smasteroids
 
 import "time"
 
-var lowerSchoolEnemy = Ship{
+var lowerSchoolShip = Ship{
 	Health:       10,
 	Thrust:       50,
 	Turn:         2,
@@ -10,7 +10,7 @@ var lowerSchoolEnemy = Ship{
 	BulletDamage: 2,
 }
 
-var middleSchoolEnemy = Ship{
+var middleSchoolShip = Ship{
 	Health:       15,
 	Thrust:       60,
 	Turn:         2.5,
@@ -18,7 +18,7 @@ var middleSchoolEnemy = Ship{
 	BulletDamage: 4,
 }
 
-var biologyEnemy = Ship{
+var biologyShip = Ship{
 	Health:       20,
 	Thrust:       75,
 	Turn:         3,
@@ -26,7 +26,7 @@ var biologyEnemy = Ship{
 	BulletDamage: 6,
 }
 
-var chemistryEnemy = Ship{
+var chemistryShip = Ship{
 	Health:       30,
 	Thrust:       80,
 	Turn:         3.25,
@@ -34,7 +34,7 @@ var chemistryEnemy = Ship{
 	BulletDamage: 8,
 }
 
-var loraxEnemy = Ship{
+var loraxShip = Ship{
 	Health:       75,
 	Thrust:       50,
 	Turn:         3.5,
@@ -42,7 +42,7 @@ var loraxEnemy = Ship{
 	BulletDamage: 15,
 }
 
-var physicsEnemy = Ship{
+var physicsShip = Ship{
 	Health:       50,
 	Thrust:       100,
 	Turn:         3.75,
@@ -50,12 +50,20 @@ var physicsEnemy = Ship{
 	BulletDamage: 15,
 }
 
-var administrationEnemy = Ship{
+var administrationShip = Ship{
 	Health:       100,
 	Thrust:       120,
 	Turn:         4.25,
 	Fire:         10,
 	BulletDamage: 10,
+}
+
+var visorGogsShip = Ship{
+	Health:       10,
+	Thrust:       100,
+	Turn:         3.5,
+	Fire:         time.Second,
+	BulletDamage: 2,
 }
 
 var Levels = []Level{
@@ -68,28 +76,7 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 5,
 		},
-		Enemies: []Enemy{
-			{
-				Name: "Carrio",
-				Ship: lowerSchoolEnemy,
-			},
-			{
-				Name: "Materre",
-				Ship: lowerSchoolEnemy,
-			},
-			{
-				Name: "Pigg",
-				Ship: lowerSchoolEnemy,
-			},
-			{
-				Name: "Wetzel",
-				Ship: lowerSchoolEnemy,
-			},
-			{
-				Name: "Dillon",
-				Ship: lowerSchoolEnemy,
-			},
-		},
+		Enemies: multiple(lowerSchoolShip, "Carrio", "Materre", "Pigg", "Wetzel", "Dillon"),
 	},
 	{
 		Name: "Middle School",
@@ -100,28 +87,7 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 7.5,
 		},
-		Enemies: []Enemy{
-			{
-				Name: "Dillon",
-				Ship: middleSchoolEnemy,
-			},
-			{
-				Name: "Hoehn",
-				Ship: middleSchoolEnemy,
-			},
-			{
-				Name: "Kiehn",
-				Ship: middleSchoolEnemy,
-			},
-			{
-				Name: "Smith",
-				Ship: middleSchoolEnemy,
-			},
-			{
-				Name: "Mead",
-				Ship: middleSchoolEnemy,
-			},
-		},
+		Enemies: multiple(middleSchoolShip, "Dillon", "Hoehn", "Kiehn", "Smith", "Mead"),
 	},
 	{
 		Name: "The Biologists",
@@ -132,21 +98,9 @@ var Levels = []Level{
 			Fire:         time.Second / 4,
 			BulletDamage: 10,
 		},
-		Enemies: append([]Enemy{
-			{
-				Name: "Flint",
-				Ship: biologyEnemy,
-			},
-			{
-				Name: "Israni",
-				Ship: biologyEnemy,
-			},
-			{
-				Name: "Adame",
-				Ship: biologyEnemy,
-			},
-		},
-			mult(2, Enemy{
+		Enemies: append(
+			multiple(biologyShip, "Adame", "Flint", "Israni"),
+			duplicate(2, Enemy{
 				Name: "Skeleton",
 				Ship: Ship{
 					Health:       10,
@@ -155,7 +109,8 @@ var Levels = []Level{
 					Fire:         time.Second / 2,
 					BulletDamage: 7.5,
 				},
-			})...),
+			})...,
+		),
 	},
 	{
 		Name: "The Chemists",
@@ -166,17 +121,9 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 10,
 		},
-		Enemies: append([]Enemy{
-			{
-				Name: "Macaraeg",
-				Ship: chemistryEnemy,
-			},
-			{
-				Name: "Owens",
-				Ship: chemistryEnemy,
-			},
-		},
-			mult(8, Enemy{
+		Enemies: append(
+			multiple(chemistryShip, "Macaraeg", "Owens"),
+			duplicate(8, Enemy{
 				Name: "VisorGogs",
 				Ship: Ship{
 					Health:       10,
@@ -197,13 +144,8 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 15,
 		},
-		Enemies: append([]Enemy{
-			{
-				Name: "Northcut",
-				Ship: loraxEnemy,
-			},
-		},
-			mult(15, Enemy{
+		Enemies: append(
+			duplicate(15, Enemy{
 				Name: "Tree",
 				Ship: Ship{
 					Health:       1,
@@ -212,7 +154,11 @@ var Levels = []Level{
 					Fire:         time.Second / 3,
 					BulletDamage: 1,
 				},
-			})...,
+			}),
+			Enemy{
+				Name: "Northcut",
+				Ship: loraxShip,
+			},
 		),
 	},
 	{
@@ -224,22 +170,27 @@ var Levels = []Level{
 			Fire:         time.Second / 6,
 			BulletDamage: 5,
 		},
+		Enemies: multiple(physicsShip, "Houpt", "Hoehn", "Balog", "Carron"),
+	},
+	{
+		Name: "Dwarf Fortress",
+		Player: Ship{
+			Health:       100,
+			Thrust:       160,
+			Turn:         3,
+			Fire:         time.Second,
+			BulletDamage: 7.5,
+		},
 		Enemies: []Enemy{
 			{
-				Name: "Houpt",
-				Ship: physicsEnemy,
-			},
-			{
-				Name: "Hoehn",
-				Ship: physicsEnemy,
-			},
-			{
-				Name: "Balog",
-				Ship: physicsEnemy,
-			},
-			{
-				Name: "Carron",
-				Ship: physicsEnemy,
+				Name: "Dwarf King",
+				Ship: Ship{
+					Health:       100,
+					Thrust:       10,
+					Turn:         5,
+					Fire:         time.Second * 5,
+					BulletDamage: 20,
+				},
 			},
 		},
 	},
@@ -252,15 +203,6 @@ var Levels = []Level{
 			Fire:         10,
 			BulletDamage: 7.5,
 		},
-		Enemies: []Enemy{
-			{
-				Name: "Dini",
-				Ship: administrationEnemy,
-			},
-			{
-				Name: "Igoe",
-				Ship: administrationEnemy,
-			},
-		},
+		Enemies: multiple(administrationShip, "Dini", "Igoe"),
 	},
 }

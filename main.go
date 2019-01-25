@@ -13,6 +13,8 @@ import (
 
 //go:generate packr
 
+var enableVSync bool
+
 func init() {
 	rand.Seed(int64(time.Now().Nanosecond()))
 }
@@ -27,17 +29,18 @@ func run() {
 		}
 	}
 	cfg := pixelgl.WindowConfig{
-		Title:     "SMasteroids",
-		Bounds:    pixel.R(0, 0, 1920, 1080),
-		VSync:     true,
-		Resizable: true,
-		Monitor:   monitor,
+		Title:  "SMasteroids",
+		Bounds: pixel.R(0, 0, 1920, 1080),
+		VSync:  enableVSync,
+		//Resizable: true,
+		Monitor: monitor,
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()
 	if err != nil {
 		panic(err)
 	}
+	win.SetCursorVisible(false)
 	// initialize sprites
 	sprites.Init()
 	// set up canvas bounds
