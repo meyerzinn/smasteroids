@@ -34,5 +34,6 @@ This project is licensed under the GPLv3 License - see the LICENSE.md file for d
 * Faraz Asim - _playtester_ - Junior, St. Mark's
 * Doug Rummel, who put up with this during Information Engineering.
 * Fletcher Carron, who humored me by putting the game on the big screen in the Winn Science Center.
+* Build scripts are based on MIT-licensed code by Humphrey Shotton.
 
 This game is meant to honor the science faculty in a humorous way. Quotes may be altered or fabricated for comedic purposes.
