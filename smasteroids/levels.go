@@ -2,30 +2,6 @@ package smasteroids
 
 import "time"
 
-var freshmanShip = Ship{
-	Health:       10,
-	Thrust:       50,
-	Turn:         2,
-	Fire:         time.Second / 2,
-	BulletDamage: 2,
-}
-
-var sophomoreShip = Ship{
-	Health:       15,
-	Thrust:       60,
-	Turn:         2.25,
-	Fire:         time.Second / 2,
-	BulletDamage: 4,
-}
-
-var juniorShip = Ship{
-	Health:       20,
-	Thrust:       75,
-	Turn:         3,
-	Fire:         time.Millisecond * 417,
-	BulletDamage: 6,
-}
-
 var seniorShip = Ship{
 	Health:       30,
 	Thrust:       80,
@@ -55,12 +31,18 @@ var Levels = []Level{
 		Name: "Freshmen",
 		Player: Ship{
 			Health:       20,
-			Thrust:       100,
+			Thrust:       110,
 			Turn:         2.5,
 			Fire:         time.Second / 3,
 			BulletDamage: 5,
 		},
-		Enemies: multiple(freshmanShip, "Jamesithati", "Madison", "Madeline", "Caroline"),
+		Enemies: multiple(Ship{
+			Health:       10,
+			Thrust:       50,
+			Turn:         1.75,
+			Fire:         time.Second,
+			BulletDamage: 2,
+		}, "Jamesithati", "Madison", "Madeline", "Caroline"),
 	},
 	{
 		Name: "Sophomores",
@@ -71,20 +53,35 @@ var Levels = []Level{
 			Fire:         time.Second / 3,
 			BulletDamage: 7.5,
 		},
-		Enemies: append(multiple(sophomoreShip, "Lahari", "Jamie", "Ajay", "Joy", "Mia", "Mikah"), Enemy{"Emma the Younger", Ship{
-			Health: 5, Thrust: 100, Turn: 3, Fire: time.Second, BulletDamage: 6,
-		}}),
+		Enemies: append(multiple(Ship{
+			Health:       15,
+			Thrust:       60,
+			Turn:         2.25,
+			Fire:         time.Second / 2,
+			BulletDamage: 4,
+		}, "Lahari", "Jamie", "Ajay", "Joy", "Mia", "Mikah"),
+			Enemy{
+				"Emma the Younger",
+				Ship{
+					Health: 5, Thrust: 100, Turn: 3, Fire: time.Second, BulletDamage: 6,
+				}}),
 	},
 	{
 		Name: "Juniors",
 		Player: Ship{
-			Health:       60,
+			Health:       150,
 			Thrust:       130,
 			Turn:         3,
 			Fire:         time.Second / 4,
-			BulletDamage: 10,
+			BulletDamage: 8,
 		},
-		Enemies: multiple(juniorShip, "Abby", "Helena", "Alice", "Catherine", "Emma the Older", "Fiona", "Hailey", "Judson", "Faraz", "Jackson", "Juhi", "Karen", "Maisy", "Mason", "Meyer", "Simone"),
+		Enemies: multiple(Ship{
+			Health:       20,
+			Thrust:       75,
+			Turn:         3,
+			Fire:         time.Millisecond * 417,
+			BulletDamage: 6,
+		}, "Abby", "Helena", "Alice", "Catherine", "Emma the Older", "Fiona", "Hailey", "Judson", "Faraz", "Jackson", "Juhi", "Karen", "Maisy", "Mason", "Meyer", "Simone"),
 	},
 	{
 		Name: "Senior(s)",
