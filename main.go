@@ -29,12 +29,13 @@ func run() {
 	}
 	width, height := monitor.Size()
 	cfg := pixelgl.WindowConfig{
-		Title:       "SMasteroids",
+		Title:       "Crewsteroids",
 		Bounds:      pixel.R(0, 0, width, height),
 		VSync:       true,
 		Undecorated: true,
 		Monitor:     monitor,
 		Icon:        []pixel.Picture{assets.Icon},
+
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	defer win.Destroy()

@@ -2,7 +2,7 @@ package smasteroids
 
 import "time"
 
-var lowerSchoolShip = Ship{
+var freshmanShip = Ship{
 	Health:       10,
 	Thrust:       50,
 	Turn:         2,
@@ -10,15 +10,15 @@ var lowerSchoolShip = Ship{
 	BulletDamage: 2,
 }
 
-var middleSchoolShip = Ship{
+var sophomoreShip = Ship{
 	Health:       15,
 	Thrust:       60,
-	Turn:         2.5,
+	Turn:         2.25,
 	Fire:         time.Second / 2,
 	BulletDamage: 4,
 }
 
-var biologyShip = Ship{
+var juniorShip = Ship{
 	Health:       20,
 	Thrust:       75,
 	Turn:         3,
@@ -26,7 +26,7 @@ var biologyShip = Ship{
 	BulletDamage: 6,
 }
 
-var chemistryShip = Ship{
+var seniorShip = Ship{
 	Health:       30,
 	Thrust:       80,
 	Turn:         3.25,
@@ -34,78 +34,60 @@ var chemistryShip = Ship{
 	BulletDamage: 8,
 }
 
-var loraxShip = Ship{
-	Health:       75,
-	Thrust:       50,
-	Turn:         3.5,
-	Fire:         time.Second / 3 * 2,
-	BulletDamage: 15,
-}
-
-var physicsShip = Ship{
-	Health:       50,
+var minorSeniorShip = Ship{
+	Health:       15,
 	Thrust:       100,
-	Turn:         3.75,
-	Fire:         time.Second / 3,
-	BulletDamage: 15,
+	Turn:         3,
+	Fire:         time.Second * 2,
+	BulletDamage: 8,
 }
 
-var administrationShip = Ship{
+var promisedLandEnemy = Ship{
 	Health:       100,
 	Thrust:       120,
 	Turn:         4.25,
-	Fire:         time.Second/200,
-	BulletDamage: 10,
+	Fire:         time.Second / 50,
+	BulletDamage: 2,
 }
 
 var Levels = []Level{
 	{
-		Name: "Lower School",
+		Name: "Freshmen",
 		Player: Ship{
 			Health:       20,
 			Thrust:       100,
-			Turn:         3,
+			Turn:         2.5,
 			Fire:         time.Second / 3,
 			BulletDamage: 5,
 		},
-		Enemies: multiple(lowerSchoolShip, "Carrio", "Materre", "Pigg", "Wetzel", "Dillon"),
+		Enemies: multiple(freshmanShip, "Jamesithati", "Madison", "Madeline", "Caroline"),
 	},
 	{
-		Name: "Middle School",
+		Name: "Sophomores",
 		Player: Ship{
 			Health:       30,
 			Thrust:       120,
-			Turn:         3,
+			Turn:         2.75,
 			Fire:         time.Second / 3,
 			BulletDamage: 7.5,
 		},
-		Enemies: multiple(middleSchoolShip, "Dillon", "Hoehn", "Kiehn", "Smith", "Mead"),
+		Enemies: append(multiple(sophomoreShip, "Lahari", "Jamie", "Ajay", "Joy", "Mia", "Mikah"), Enemy{"Emma the Younger", Ship{
+			Health: 5, Thrust: 100, Turn: 3, Fire: time.Second, BulletDamage: 6,
+		}}),
 	},
 	{
-		Name: "The Biologists",
+		Name: "Juniors",
 		Player: Ship{
-			Health:       50,
+			Health:       60,
 			Thrust:       130,
 			Turn:         3,
 			Fire:         time.Second / 4,
 			BulletDamage: 10,
 		},
-		Enemies: append(
-			multiple(biologyShip, "Adame", "Flint", "Israni"),
-			duplicate(2, Enemy{
-				Name: "Skeleton",
-				Ship: Ship{
-					Health:       10,
-					Thrust:       80,
-					Turn:         3.75,
-					Fire:         time.Second / 2,
-					BulletDamage: 7.5,
-				},
-			})...,
-		),
+		Enemies: multiple(juniorShip, "Abby", "Helena", "Alice", "Catherine", "Emma the Older", "Fiona", "Hailey", "Judson", "Faraz", "Jackson", "Juhi", "Karen", "Maisy", "Mason", "Meyer", "Simone"),
 	},
 	{
-		Name: "The Chemists",
+		Name: "Senior(s)",
 		Player: Ship{
 			Health:       60,
 			Thrust:       140,
@@ -114,87 +96,19 @@ var Levels = []Level{
 			BulletDamage: 10,
 		},
 		Enemies: append(
-			multiple(chemistryShip, "Macaraeg", "Owens"),
-			duplicate(8, Enemy{
-				Name: "VisorGogs",
-				Ship: Ship{
-					Health:       10,
-					Thrust:       100,
-					Turn:         3.5,
-					Fire:         time.Second,
-					BulletDamage: 2,
-				},
-			})...,
+			multiple(seniorShip, "Eloise", "Meghna", "Gabe"),
+			multiple(minorSeniorShip, "Ello", "Sinny", "Wheezy")...,
 		),
 	},
 	{
-		Name: "The Lorax",
-		Player: Ship{
-			Health:       80,
-			Thrust:       150,
-			Turn:         3,
-			Fire:         time.Second / 3,
-			BulletDamage: 15,
-		},
-		Enemies: append(
-			duplicate(15, Enemy{
-				Name: "Tree",
-				Ship: Ship{
-					Health:       1,
-					Thrust:       20,
-					Turn:         5,
-					Fire:         time.Second / 3,
-					BulletDamage: 1,
-				},
-			}),
-			Enemy{
-				Name: "Northcut",
-				Ship: loraxShip,
-			},
-		),
-	},
-	{
-		Name: "The Physicists",
-		Player: Ship{
+		"God",
+		Ship{
 			Health:       100,
-			Thrust:       150,
+			Thrust:       140,
 			Turn:         3,
-			Fire:         time.Second / 6,
+			Fire:         time.Second / 10,
 			BulletDamage: 5,
 		},
-		Enemies: multiple(physicsShip, "Houpt", "Hoehn", "Balog", "Carron"),
-	},
-	{
-		Name: "Dwarf Fortress",
-		Player: Ship{
-			Health:       100,
-			Thrust:       160,
-			Turn:         3,
-			Fire:         time.Second,
-			BulletDamage: 7.5,
-		},
-		Enemies: []Enemy{
-			{
-				Name: "Dwarf King",
-				Ship: Ship{
-					Health:       100,
-					Thrust:       10,
-					Turn:         5,
-					Fire:         time.Second * 5,
-					BulletDamage: 20,
-				},
-			},
-		},
-	},
-	{
-		Name: "The Administration",
-		Player: Ship{
-			Health:       100,
-			Thrust:       150,
-			Turn:         3,
-			Fire:         time.Second/100,
-			BulletDamage: 7.5,
-		},
-		Enemies: multiple(administrationShip, "Dini", "Igoe"),
+		multiple(promisedLandEnemy, "Kallos", "Annie", "Gray"),
 	},
 }
