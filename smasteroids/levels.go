@@ -50,22 +50,6 @@ var minorParentsEnemy = Ship{
 	BulletDamage: 4,
 }
 
-//var loraxEnemy = Ship{
-//	Health:       75,
-//	Thrust:       50,
-//	Turn:         3.5,
-//	Fire:         time.Second / 3 * 2,
-//	BulletDamage: 15,
-//}
-//
-//var physicsEnemy = Ship{
-//	Health:       50,
-//	Thrust:       100,
-//	Turn:         3.75,
-//	Fire:         time.Second / 3,
-//	BulletDamage: 15,
-//}
-//
 var promisedLandEnemy = Ship{
 	Health:       100,
 	Thrust:       120,
@@ -74,7 +58,7 @@ var promisedLandEnemy = Ship{
 	BulletDamage: 10,
 }
 
-var Levels []Level = []Level{
+var Levels = []Level{
 	{
 		Name: "Monday",
 		Player: Ship{
