@@ -73,23 +73,24 @@ func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForPoly(1, len(shipVertices), shipVertices, cp.Vector{}, 1)))
 	shipShape := s.space.AddShape(cp.NewPolyShape(body, len(shipVertices), shipVertices, cp.NewTransformIdentity(), 1))
 	var health float64
+	var ship = &Ship{
+		body:   body,
+		sprite: pixel.NewSprite(sprites.TextureShip, sprites.TextureShip.Bounds()),
+		data:   data,
+		health: health,
+	}
 	if enemy {
 		shipShape.SetCollisionType(CollisionTypeEnemy)
 		shipShape.SetFilter(enemyShipFilter)
 		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).ScaledXY(pixel.V(rand.Float64(), rand.Float64())).Sub(CanvasBounds.Max)))
-		health = data.Health + data.Health*math.Sqrt(float64(len(Players)))
+		ship.data.Health = ship.data.Health * math.Sqrt(float64(len(Players)))
+		health = data.Health * math.Sqrt(float64(len(Players)))
 	} else {
 		shipShape.SetCollisionType(CollisionTypePlayer)
 		shipShape.SetFilter(playerShipFilter)
 		health = data.Health
 	}
 
-	ship := &Ship{
-		body:   body,
-		sprite: pixel.NewSprite(sprites.TextureShip, sprites.TextureShip.Bounds()),
-		data:   data,
-		health: health,
-	}
 	body.UserData = &ship.health
 	return ship
 }
@@ -104,27 +105,25 @@ type Bullet struct {
 func (s *LevelScene) newBullet(parent *Ship, ttl time.Duration, enemy bool) *Bullet {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForCircle(1, 0, 4, cp.Vector{})))
 	bulletShape := s.space.AddShape(cp.NewCircle(body, 4, cp.Vector{}))
-	var health float64
+	var bullet = &Bullet{
+		body:    body,
+		sprite:  pixel.NewSprite(sprites.TextureBullet, sprites.TextureBullet.Bounds()),
+		despawn: time.Now().Add(ttl),
+	}
 	if enemy {
 		bulletShape.SetCollisionType(CollisionTypeEnemy)
 		bulletShape.SetFilter(enemyBulletFilter)
-		health = parent.data.BulletDamage * math.Sqrt(float64(len(Players)))
+		bullet.health = parent.data.BulletDamage * math.Sqrt(float64(len(Players)))
 	} else {
 		bulletShape.SetCollisionType(CollisionTypePlayer)
 		bulletShape.SetFilter(playerBulletFilter)
-		health = parent.data.BulletDamage
+		bullet.health = parent.data.BulletDamage
 	}
 	body.SetPosition(parent.body.Position())
 	body.SetVelocityVector(parent.body.Velocity())
 	body.SetAngle(parent.body.Angle())
 	body.SetAngularVelocity(parent.body.AngularVelocity())
 	body.ApplyForceAtLocalPoint(cp.Vector{Y: 20000}, cp.Vector{})
-	bullet := &Bullet{
-		body:    body,
-		sprite:  pixel.NewSprite(sprites.TextureBullet, sprites.TextureBullet.Bounds()),
-		health:  health,
-		despawn: time.Now().Add(ttl),
-	}
 	body.UserData = &bullet.health
 	return bullet
 }
@@ -218,7 +217,7 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		return
 	}
 
-	// Next level if all enemies are dead, and cheatcode to skip ahead.
+	// Next level if all enemies are dead or cheatcode is pressed.
 	if len(s.enemies) == 0 || (win.Pressed(pixelgl.KeyJ) && win.Pressed(pixelgl.KeyA) && win.Pressed(pixelgl.KeyN) && win.Pressed(pixelgl.KeyK)) { // all enemies dead or cheatcode active
 		if s.levelIndex == len(smasteroids.Levels)-1 {
 			TransitionTo(Win())
@@ -364,8 +363,8 @@ func PlayLevel(index int) *LevelScene {
 		seg.SetElasticity(1)
 		seg.SetFriction(0)
 		seg.SetCollisionType(CollisionTypeWall)
-		seg.SetSensor(true)
 		seg.SetFilter(cp.NewShapeFilter(cp.NO_GROUP, uint(CollisionTypeWall), uint(cp.WILDCARD_COLLISION_TYPE)))
+		seg.SetSensor(true)
 	}
 
 	dmg := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
