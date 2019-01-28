@@ -42,7 +42,7 @@ func makeJoyConRControlScheme(joystick pixelgl.Joystick) ControlScheme {
 		Left:   JoystickButtonInputMethod{Joystick: joystick, Button: 19, Alias: "LEFT"},
 		Right:  JoystickButtonInputMethod{Joystick: joystick, Button: 17, Alias: "RIGHT"},
 		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 3, Alias: "Y"},
-		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 14, Alias: "SR"},
+		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 5, Alias: "SR"},
 		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 1, Alias: "X"},
 	}
 }

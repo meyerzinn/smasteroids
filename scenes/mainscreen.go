@@ -51,7 +51,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	}
 
 	// Add new players with joysticks.
-	for joystick := pixelgl.Joystick1; joystick < pixelgl.Joystick16 && len(Players) < MaxPlayers; joystick++ {
+	for joystick := pixelgl.Joystick1; joystick <= pixelgl.JoystickLast && len(Players) < MaxPlayers; joystick++ {
 		if win.JoystickPresent(joystick) {
 			if _, ok := joystickPlayers[joystick]; !ok {
 				if scheme, ok := joystickControlSchemes[win.JoystickName(joystick)]; ok {
