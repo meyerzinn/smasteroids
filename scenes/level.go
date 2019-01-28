@@ -72,25 +72,22 @@ func (s *Ship) drawHealthBar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
 func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 	body := s.space.AddBody(cp.NewBody(1, cp.MomentForPoly(1, len(shipVertices), shipVertices, cp.Vector{}, 1)))
 	shipShape := s.space.AddShape(cp.NewPolyShape(body, len(shipVertices), shipVertices, cp.NewTransformIdentity(), 1))
-	var health float64
 	var ship = &Ship{
 		body:   body,
 		sprite: pixel.NewSprite(sprites.TextureShip, sprites.TextureShip.Bounds()),
 		data:   data,
-		health: health,
 	}
 	if enemy {
 		shipShape.SetCollisionType(CollisionTypeEnemy)
 		shipShape.SetFilter(enemyShipFilter)
 		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).ScaledXY(pixel.V(rand.Float64(), rand.Float64())).Sub(CanvasBounds.Max)))
 		ship.data.Health = ship.data.Health * math.Sqrt(float64(len(Players)))
-		health = data.Health * math.Sqrt(float64(len(Players)))
+		ship.health = ship.data.Health
 	} else {
 		shipShape.SetCollisionType(CollisionTypePlayer)
 		shipShape.SetFilter(playerShipFilter)
-		health = data.Health
+		ship.health = data.Health
 	}
-
 	body.UserData = &ship.health
 	return ship
 }
