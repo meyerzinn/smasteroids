@@ -77,7 +77,7 @@ func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
 		shipShape.SetCollisionType(CollisionTypeEnemy)
 		shipShape.SetFilter(enemyShipFilter)
 		body.SetPosition(p2cp(pixel.V(CanvasBounds.W(), CanvasBounds.H()).ScaledXY(pixel.V(rand.Float64(), rand.Float64())).Sub(CanvasBounds.Max)))
-		health = data.Health * float64(len(Players))
+		health = data.Health + data.Health*math.Sqrt(float64(len(Players)))
 	} else {
 		shipShape.SetCollisionType(CollisionTypePlayer)
 		shipShape.SetFilter(playerShipFilter)
@@ -108,7 +108,7 @@ func (s *LevelScene) newBullet(parent *Ship, ttl time.Duration, enemy bool) *Bul
 	if enemy {
 		bulletShape.SetCollisionType(CollisionTypeEnemy)
 		bulletShape.SetFilter(enemyBulletFilter)
-		health = parent.data.BulletDamage * float64(len(Players))
+		health = parent.data.BulletDamage * math.Sqrt(float64(len(Players)))
 	} else {
 		bulletShape.SetCollisionType(CollisionTypePlayer)
 		bulletShape.SetFilter(playerBulletFilter)
