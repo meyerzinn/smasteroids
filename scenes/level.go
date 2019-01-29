@@ -365,14 +365,13 @@ func PlayLevel(index int) *LevelScene {
 	}
 
 	dmg := space.NewCollisionHandler(CollisionTypePlayer, CollisionTypeEnemy)
-	dmg.BeginFunc = func(arb *cp.Arbiter, _ *cp.Space, _ interface{}) bool {
+	dmg.SeparateFunc = func(arb *cp.Arbiter, _ *cp.Space, _ interface{}) {
 		a, b := arb.Bodies()
 		healthA := a.UserData.(*float64)
 		healthB := b.UserData.(*float64)
 		temp := *healthA - math.Max(*healthB*.5, 0)
 		*healthB = *healthB - math.Max(*healthA*.5, 0)
 		*healthA = temp
-		return true
 	}
 
 	wrapHandler := space.NewWildcardCollisionHandler(CollisionTypeWall)
