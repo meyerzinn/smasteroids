@@ -30,6 +30,7 @@ type Level struct {
 	Enemies []Enemy
 }
 
+// multiple returns multiple enemies with the same ship, each with a different name.
 func multiple(ship Ship, names ...string) (out []Enemy) {
 	for _, name := range names {
 		out = append(out, Enemy{
@@ -40,6 +41,7 @@ func multiple(ship Ship, names ...string) (out []Enemy) {
 	return
 }
 
+// duplicate returns multiple enemies from the given enemy.
 func duplicate(n int, enemy Enemy) (out []Enemy) {
 	for i := 0; i < n; i++ {
 		out = append(out, enemy)

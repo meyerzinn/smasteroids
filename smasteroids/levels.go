@@ -54,7 +54,7 @@ var administrationShip = Ship{
 	Health:       100,
 	Thrust:       120,
 	Turn:         4.25,
-	Fire:         time.Second/200,
+	Fire:         time.Second / 200,
 	BulletDamage: 10,
 }
 
@@ -192,7 +192,7 @@ var Levels = []Level{
 			Health:       100,
 			Thrust:       150,
 			Turn:         3,
-			Fire:         time.Second/100,
+			Fire:         time.Second / 100,
 			BulletDamage: 7.5,
 		},
 		Enemies: multiple(administrationShip, "Dini", "Igoe"),
