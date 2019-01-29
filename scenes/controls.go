@@ -19,9 +19,10 @@ var (
 	joystickPlayers = make(map[pixelgl.Joystick]int)
 
 	joystickControlSchemes = map[string]JoystickControlSchemeFactory{
-		"8Bitdo SFC30 GamePad": make8BitdoSFC30GamePadControlScheme,
-		"Joy-Con (R)":          makeJoyConRControlScheme,
-		"Joy-Con (L)":          makeJoyConLControlScheme,
+		"8Bitdo SFC30 GamePad":       make8BitdoSFC30GamePadControlScheme,
+		"Joy-Con (R)":                makeJoyConRControlScheme,
+		"Joy-Con (L)":                makeJoyConLControlScheme,
+		"PLAYSTATION(R)3 Controller": makeDualshock3ControlScheme,
 	}
 )
 
@@ -54,6 +55,16 @@ func makeJoyConLControlScheme(joystick pixelgl.Joystick) ControlScheme {
 		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 1, Alias: ">"},
 		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 3, Alias: "^"},
 		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 5, Alias: "SR"},
+	}
+}
+
+func makeDualshock3ControlScheme(joystick pixelgl.Joystick) ControlScheme {
+	return ControlScheme{
+		Left:   JoystickButtonInputMethod{Joystick: joystick, Button: 7, Alias: "<"},
+		Right:  JoystickButtonInputMethod{Joystick: joystick, Button: 5, Alias: ">"},
+		Thrust: JoystickButtonInputMethod{Joystick: joystick, Button: 8, Alias: "L2"},
+		Shoot:  JoystickButtonInputMethod{Joystick: joystick, Button: 9, Alias: "R2"},
+		Boost:  JoystickButtonInputMethod{Joystick: joystick, Button: 14, Alias: "X"},
 	}
 }
 
