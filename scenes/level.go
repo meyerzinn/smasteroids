@@ -27,12 +27,12 @@ const BoostDelay = 7 * time.Second
 var Players []ControlScheme
 var PlayerColors = []color.Color{colornames.Blue, colornames.Gold}
 
-// Convert pixel Vector to chipmunk Vector
+// Convert pixel.Vec to cp.Vector
 func p2cp(v pixel.Vec) cp.Vector {
 	return cp.Vector(v)
 }
 
-// Convert chipmunk Vector to pixel Vector
+// Convert cp.Vector to pixel.Vec
 func cp2p(v cp.Vector) pixel.Vec {
 	return pixel.Vec(v)
 }
@@ -54,9 +54,7 @@ type Ship struct {
 	health   float64
 }
 
-func (s *Ship) drawHealthBar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
-	to.Clear(colornames.Black)
-	imd.Clear()
+func (s *Ship) drawHealthBar(imd *imdraw.IMDraw) {
 	if s.health > .5*s.data.Health {
 		imd.Color = colornames.Green
 	} else if s.health > .3*s.data.Health {
@@ -64,9 +62,10 @@ func (s *Ship) drawHealthBar(imd *imdraw.IMDraw, to *pixelgl.Canvas) {
 	} else {
 		imd.Color = colornames.Red
 	}
-	imd.Push(pixel.V(0, 0), pixel.V(s.health/s.data.Health*64, 8))
+	min := cp2p(s.body.Position()).Sub(pixel.V(32, 40))
+	max := min.Add(pixel.V(s.health/s.data.Health*64, 8))
+	imd.Push(min, max)
 	imd.Rectangle(0)
-	imd.Draw(to)
 }
 
 func (s *LevelScene) newShip(data smasteroids.Ship, enemy bool) *Ship {
@@ -142,18 +141,19 @@ type Player struct {
 }
 
 type LevelScene struct {
-	level        smasteroids.Level
-	levelIndex   int
-	space        *cp.Space
-	players      []*Player
-	enemies      []*Ship
-	labels       map[*Ship]string
-	bullets      []*Bullet
-	lastTick     time.Time
-	canvas       *pixelgl.Canvas
-	healthCanvas *pixelgl.Canvas
-	imd          *imdraw.IMDraw
-	labelText    *text.Text
+	level             smasteroids.Level
+	levelIndex        int
+	space             *cp.Space
+	players           []*Player
+	enemies           []*Ship
+	labels            map[*Ship]string
+	bullets           []*Bullet
+	lastTick          time.Time
+	canvas            *pixelgl.Canvas
+	imd               *imdraw.IMDraw
+	labelText         *text.Text
+	shipSpriteBatch   *pixel.Batch
+	bulletSpriteBatch *pixel.Batch
 }
 
 func (s *LevelScene) deleteEnemy(i int) {
@@ -236,6 +236,9 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 
 	// Render the scene.
 	s.canvas.Clear(colornames.Black)
+	s.imd.Clear()
+	s.shipSpriteBatch.Clear()
+	s.bulletSpriteBatch.Clear()
 
 	// Update and draw players.
 	for i := len(s.players) - 1; i >= 0; i-- {
@@ -273,10 +276,9 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 			ship.body.ApplyImpulseAtLocalPoint(cp.Vector{Y: 200}, cp.Vector{})
 		}
 		// Draw sprite--scaled down for better resolution.
-		ship.sprite.DrawColorMask(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())), player.Color)
+		ship.sprite.DrawColorMask(s.shipSpriteBatch, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())), player.Color)
 		// Draw health bar.
-		ship.drawHealthBar(s.imd, s.healthCanvas)
-		s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
+		ship.drawHealthBar(s.imd)
 	}
 
 	// Update and draw enemies.
@@ -305,15 +307,16 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		}
 
 		// Draw sprite--scaled down for better resolution.
-		ship.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
+		ship.sprite.Draw(s.shipSpriteBatch, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, ship.body.Angle()).Moved(cp2p(ship.body.Position())))
 
 		s.labelText.Clear()
 		_, _ = s.labelText.WriteString(s.labels[ship])
 		s.labelText.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 30)).Sub(s.labelText.Bounds().Center())))
 
-		ship.drawHealthBar(s.imd, s.healthCanvas)
-		s.healthCanvas.Draw(s.canvas, pixel.IM.Moved(cp2p(ship.body.Position()).Sub(pixel.V(0, 40)).Sub(pixel.V(0, s.healthCanvas.Bounds().H()/2))))
+		ship.drawHealthBar(s.imd)
 	}
+
+	s.imd.Draw(s.canvas)
 
 	// Draw bullets.
 	for i := len(s.bullets) - 1; i >= 0; i-- {
@@ -321,10 +324,11 @@ func (s *LevelScene) Render(win *pixelgl.Window) {
 		if bullet.health <= 0 || bullet.despawn.Before(now) {
 			s.deleteBullet(i)
 		} else {
-			bullet.sprite.Draw(s.canvas, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, bullet.body.Angle()).Moved(cp2p(bullet.body.Position())))
+			bullet.sprite.Draw(s.bulletSpriteBatch, pixel.IM.Scaled(pixel.ZV, 1.0/4.0).Rotated(pixel.ZV, bullet.body.Angle()).Moved(cp2p(bullet.body.Position())))
 		}
 	}
-
+	s.shipSpriteBatch.Draw(s.canvas)
+	s.bulletSpriteBatch.Draw(s.canvas)
 	// Render scene to the window.
 	Draw(win, s.canvas)
 }
@@ -336,7 +340,7 @@ func PlayLevel(index int) *LevelScene {
 
 	// initialize graphics
 	scene.imd = imdraw.New(nil)
-	scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
+	//scene.healthCanvas = pixelgl.NewCanvas(pixel.R(0, 0, 64, 8))
 
 	scene.canvas = pixelgl.NewCanvas(CanvasBounds)
 
@@ -403,6 +407,9 @@ func PlayLevel(index int) *LevelScene {
 		scene.labels[ship] = enemy.Name
 	}
 	scene.labelText = text.New(pixel.ZV, assets.FontLabel)
+
+	scene.shipSpriteBatch = pixel.NewBatch(&pixel.TrianglesData{}, sprites.TextureShip)
+	scene.bulletSpriteBatch = pixel.NewBatch(&pixel.TrianglesData{}, sprites.TextureBullet)
 
 	return &scene
 }

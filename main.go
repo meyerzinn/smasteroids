@@ -47,7 +47,7 @@ func run() {
 	// initialize sprites
 	sprites.Init()
 	// set up canvas bounds
-	scenes.CanvasBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
+	//scenes.CanvasBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
 	CenterWindow(win)
 	scenes.TransitionTo(scenes.Start())
 	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
