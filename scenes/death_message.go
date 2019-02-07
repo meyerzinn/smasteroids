@@ -14,9 +14,8 @@ import (
 )
 
 type deathMessageScene struct {
-	text   *text.Text
-	canvas *pixelgl.Canvas
-	level  int
+	text  *text.Text
+	level int
 
 	footerMessage     *text.Text
 	footerBlinkTicker *time.Ticker
@@ -25,7 +24,7 @@ type deathMessageScene struct {
 
 func (s *deathMessageScene) Render(win *pixelgl.Window) {
 	if Players[0].Boost.GetInput(win) {
-		TransitionTo(TitleScene(s.level))
+		TransitionTo(NewTitleScene(s.level))
 		return
 	}
 
@@ -39,17 +38,16 @@ func (s *deathMessageScene) Render(win *pixelgl.Window) {
 	default:
 	}
 
-	s.canvas.Clear(colornames.Black)
+	win.Clear(colornames.Black)
+	win.SetMatrix(pixel.IM)
 	bounds := s.text.Bounds()
-	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*2/3)).Sub(bounds.Center()))
-	s.text.Draw(s.canvas, matrix)
+	matrix := pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/2, win.Bounds().H()*2/3)).Sub(bounds.Center()))
+	s.text.Draw(win, matrix)
 	if s.footerActive.Load().(bool) {
 		bounds := s.footerMessage.Bounds()
-		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/3)).Sub(bounds.Center()))
-		s.footerMessage.Draw(s.canvas, matrix)
+		matrix = pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/2, win.Bounds().H()*1/3)).Sub(bounds.Center()))
+		s.footerMessage.Draw(win, matrix)
 	}
-
-	Draw(win, s.canvas)
 }
 
 func (s *deathMessageScene) Destroy() {
@@ -79,7 +77,6 @@ func Death(index int) Scene {
 	return &deathMessageScene{
 		text:              txt,
 		level:             index,
-		canvas:            pixelgl.NewCanvas(CanvasBounds),
 		footerMessage:     footerMessage,
 		footerBlinkTicker: footerBlinkTicker,
 		footerActive:      footerActive,

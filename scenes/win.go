@@ -10,21 +10,20 @@ import (
 	"time"
 )
 
-const winFooterMessageText = "Press [Boost] to start again."
+const winFooterMessageText = "Player 1: Press [Boost] to continue."
 
-type WinScene struct {
+type winScene struct {
 	titleMessage *text.Text
 
 	footerMessage     *text.Text
 	footerBlinkTicker *time.Ticker
 	footerActive      atomic.Value
-	canvas            *pixelgl.Canvas
 }
 
-func (s *WinScene) Render(win *pixelgl.Window) {
+func (s *winScene) Render(win *pixelgl.Window) {
 	if Players[0].Boost.GetInput(win) {
-		s.Destroy()
-		current = Play()
+		TransitionTo(NewMainscreenScene())
+		return
 	}
 
 	// make the footer blink
@@ -37,26 +36,26 @@ func (s *WinScene) Render(win *pixelgl.Window) {
 	default:
 	}
 	// clear the window
-	s.canvas.Clear(colornames.Black)
+	win.Clear(colornames.Black)
+	win.SetMatrix(pixel.IM)
 	// show the game title
 	bounds := s.titleMessage.Bounds()
-	matrix := pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*2/3)).Sub(bounds.Center()))
-	s.titleMessage.Draw(s.canvas, matrix)
+	matrix := pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/2, win.Bounds().H()*2/3)).Sub(bounds.Center()))
+	s.titleMessage.Draw(win, matrix)
 	// show the footer message
 	if s.footerActive.Load().(bool) {
 		bounds = s.footerMessage.Bounds()
-		matrix = pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/3)).Sub(bounds.Center()))
-		s.footerMessage.Draw(s.canvas, matrix)
+		matrix = pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/2, win.Bounds().H()*1/3)).Sub(bounds.Center()))
+		s.footerMessage.Draw(win, matrix)
 	}
-	Draw(win, s.canvas)
 }
 
-func (s *WinScene) Destroy() {
+func (s *winScene) Destroy() {
 	// stop the footer blinking ticker
 	s.footerBlinkTicker.Stop()
 }
 
-func Win() Scene {
+func NewWin() Scene {
 	titleMessage := text.New(pixel.V(0, 0), assets.FontTitle)
 	_, _ = titleMessage.WriteString("You Winn!")
 	footerMessage := text.New(pixel.ZV, assets.FontInterface)
@@ -64,11 +63,10 @@ func Win() Scene {
 	footerBlinkTicker := time.NewTicker(time.Second)
 	var footerActive atomic.Value
 	footerActive.Store(true)
-	return &MainscreenScene{
+	return &winScene{
 		titleMessage:      titleMessage,
 		footerMessage:     footerMessage,
 		footerBlinkTicker: footerBlinkTicker,
 		footerActive:      footerActive,
-		canvas:            pixelgl.NewCanvas(CanvasBounds),
 	}
 }

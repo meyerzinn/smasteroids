@@ -47,9 +47,9 @@ func run() {
 	// initialize sprites
 	sprites.Init()
 	// set up canvas bounds
-	//scenes.CanvasBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
+	//scenes.GameBounds = win.Bounds().Moved(win.Bounds().Center().Scaled(-1))
 	CenterWindow(win)
-	scenes.TransitionTo(scenes.Start())
+	scenes.TransitionTo(scenes.NewMainscreenScene())
 	tickDuration := time.Duration(math.Floor((1.0/60.0)*math.Pow10(9))) * time.Nanosecond
 	ticker := time.NewTicker(tickDuration)
 	defer ticker.Stop()
@@ -61,7 +61,7 @@ func run() {
 				win.SetMonitor(monitor)
 				width, height = monitor.Size()
 				win.SetBounds(pixel.R(0, 0, width, height), )
-				win.SetMatrix(pixel.IM.Scaled(pixel.ZV, width/scenes.CanvasBounds.W()))
+				win.SetMatrix(pixel.IM.Scaled(pixel.ZV, width/scenes.GameBounds.W()))
 			}
 		}
 		win.Clear(colornames.Black)

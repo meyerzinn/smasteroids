@@ -17,23 +17,22 @@ const MaxPlayers = 2
 
 const footerMessageText = "Player 1: Press [Boost] to start."
 
-type MainscreenScene struct {
+type mainscreenScene struct {
 	titleMessage      *text.Text
 	versionMessage    *text.Text
 	controlsMessage   *text.Text
 	footerMessage     *text.Text
 	footerBlinkTicker *time.Ticker
 	footerActive      atomic.Value
-	canvas            *pixelgl.Canvas
 }
 
 var controlsLabels = []string{"Thrust", "Turn Left", "Turn Right", "Shoot", "Boost"}
 
-const joinText = "Connect another joystick to join."
+const joinText = "Connect a controller to join."
 
-func (s *MainscreenScene) Render(win *pixelgl.Window) {
+func (s *mainscreenScene) Render(win *pixelgl.Window) {
 	if len(Players) > 0 && Players[0].Boost.GetInput(win) {
-		TransitionTo(Play())
+		TransitionTo(NewTitleScene(0))
 		return
 	}
 
@@ -80,10 +79,10 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	}
 
 	// Clear the window.
-	s.canvas.Clear(colornames.Black)
+	win.Clear(colornames.Black)
 	// Show the game title.
 	bounds := s.titleMessage.Bounds()
-	s.titleMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*4/5)).Sub(bounds.Center())))
+	s.titleMessage.Draw(win, pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/2, win.Bounds().H()*4/5)).Sub(bounds.Center())))
 
 	// Show controls message for all currently joined players.
 	// > Show labels.
@@ -92,7 +91,7 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 	for _, l := range controlsLabels {
 		fmt.Fprintln(s.controlsMessage, l)
 	}
-	s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
+	s.controlsMessage.Draw(win, pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/5, win.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
 	for i, scheme := range Players {
 		s.controlsMessage.Clear()
 		fmt.Fprintf(s.controlsMessage, "Player %d\n", i+1)
@@ -101,32 +100,30 @@ func (s *MainscreenScene) Render(win *pixelgl.Window) {
 		fmt.Fprintln(s.controlsMessage, scheme.Right.String())
 		fmt.Fprintln(s.controlsMessage, scheme.Shoot.String())
 		fmt.Fprintln(s.controlsMessage, scheme.Boost.String())
-		s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*(float64(i)+2)/5, s.canvas.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
+		s.controlsMessage.Draw(win, pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()*(float64(i)+2)/5, win.Bounds().H()/2)).Sub(s.controlsMessage.Bounds().Center())))
 	}
 	// Show join message for all possible players not joined.
 	if len(Players) != MaxPlayers {
 		s.controlsMessage.Clear()
 		fmt.Fprintf(s.controlsMessage, joinText)
-		s.controlsMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()*0.5, s.canvas.Bounds().H()*2/5)).Sub(s.controlsMessage.Bounds().Center())))
+		s.controlsMessage.Draw(win, pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()*0.5, win.Bounds().H()*2/5)).Sub(s.controlsMessage.Bounds().Center())))
 	}
 
 	// show the footer message
 	if s.footerActive.Load().(bool) {
 		bounds = s.footerMessage.Bounds()
-		s.footerMessage.Draw(s.canvas, pixel.IM.Moved(s.canvas.Bounds().Min.Add(pixel.V(s.canvas.Bounds().W()/2, s.canvas.Bounds().H()*1/5)).Sub(bounds.Center())))
+		s.footerMessage.Draw(win, pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(win.Bounds().W()/2, win.Bounds().H()*1/5)).Sub(bounds.Center())))
 	}
 
-	s.versionMessage.Draw(s.canvas, pixel.IM.Moved(CanvasBounds.Min).Moved(pixel.V(4, 4)))
-
-	Draw(win, s.canvas)
+	s.versionMessage.Draw(win, pixel.IM.Moved(win.Bounds().Min.Add(pixel.V(4, 4))))
 }
 
-func (s *MainscreenScene) Destroy() {
+func (s *mainscreenScene) Destroy() {
 	// stop the footer blinking ticker
 	s.footerBlinkTicker.Stop()
 }
 
-func Start() Scene {
+func NewMainscreenScene() Scene {
 	titleMessage := text.New(pixel.V(0, 0), assets.FontTitle)
 	_, _ = titleMessage.WriteString("SMasteroids")
 	controlsMessage := text.New(pixel.ZV, assets.FontInterface)
@@ -138,13 +135,12 @@ func Start() Scene {
 	versionMessage := text.New(pixel.ZV, text.NewAtlas(basicfont.Face7x13, text.ASCII))
 	_, _ = versionMessage.WriteString("Version " + smasteroids.Version() + ". Developed by Meyer Zinn.")
 
-	return &MainscreenScene{
+	return &mainscreenScene{
 		titleMessage:      titleMessage,
 		versionMessage:    versionMessage,
 		controlsMessage:   controlsMessage,
 		footerMessage:     footerMessage,
 		footerBlinkTicker: footerBlinkTicker,
 		footerActive:      footerActive,
-		canvas:            pixelgl.NewCanvas(CanvasBounds),
 	}
 }

@@ -3,14 +3,15 @@ package scenes
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"math"
 )
 
 var (
 	// current represents the currently active scene which is rendered.
 	current Scene
 
-	// CanvasBounds represents the dimensions of the canvas (also used for physics).
-	CanvasBounds = pixel.R(-1920/2, -1080/2, 1920/2, 1080/2)
+	// GameBounds represents the dimensions of the game (used for physics).
+
 )
 
 // Scene represents a logical division of the game (like a slide in PowerPoint).
@@ -25,9 +26,16 @@ type DestroyableScene interface {
 	Destroy()
 }
 
-// Draw draws a canvas to the window, properly scaling and moving the canvas.
-func Draw(win *pixelgl.Window, canvas *pixelgl.Canvas) {
-	win.SetMatrix(pixel.IM.Scaled(pixel.ZV, win.Bounds().W()/canvas.Bounds().W()).Moved(win.Bounds().Center()))
+// DrawCanvas draws a canvas to the window, properly scaling and moving the canvas to fit within the window.
+//
+// The aspect ratio of the canvas is maintained when scaled.
+func DrawCanvas(win *pixelgl.Window, canvas *pixelgl.Canvas) {
+	win.SetMatrix(pixel.IM.Scaled(pixel.ZV,
+		math.Min(
+			win.Bounds().W()/canvas.Bounds().W(),
+			win.Bounds().H()/canvas.Bounds().H(),
+		),
+	).Moved(win.Bounds().Center()))
 	canvas.Draw(win, pixel.IM.Moved(canvas.Bounds().Center()))
 }
 
