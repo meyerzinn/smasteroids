@@ -269,11 +269,11 @@ func (s *levelScene) Render(win *pixelgl.Window) {
 		}
 		// Apply rotation.
 		if controls.Left && !controls.Right {
-			ship.body.ApplyForceAtLocalPoint(cp.Vector{X: ship.data.Turn}, cp.Vector{Y: 1})
-			//ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), ship.data.Turn, 3*dt))
+			//ship.body.ApplyForceAtLocalPoint(cp.Vector{X: ship.data.Turn}, cp.Vector{Y: 1})
+			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), ship.data.Turn, 3*dt))
 		} else if controls.Right {
-			ship.body.ApplyForceAtLocalPoint(cp.Vector{X: -ship.data.Turn}, cp.Vector{Y: 1})
-			//ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), -ship.data.Turn, 3*dt))
+			//ship.body.ApplyForceAtLocalPoint(cp.Vector{X: -ship.data.Turn}, cp.Vector{Y: 1})
+			ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), -ship.data.Turn, 3*dt))
 			//} else {
 			//ship.body.SetAngularVelocity(cp.Lerp(ship.body.AngularVelocity(), 0, 3*dt))
 		}
