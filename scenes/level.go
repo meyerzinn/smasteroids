@@ -26,7 +26,7 @@ var Players []ControlScheme
 
 var (
 	GameBounds   = pixel.R(-1920/2, -1080/2, 1920/2, 1080/2)
-	PlayerColors = []color.Color{colornames.Gold, colornames.Blue}
+	PlayerColors = []color.Color{colornames.Gold, colornames.Limegreen}
 
 	shipCollisionPolygon = []cp.Vector{{-12, -12}, {0, 24}, {12, -12}}
 )
