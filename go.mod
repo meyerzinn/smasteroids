@@ -12,7 +12,7 @@ require (
 	github.com/jakecoffman/cp v0.1.0
 	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.2.2
-	golang.org/x/image v0.0.0-20181116024801-cd38e8056d9b
+	golang.org/x/image v0.5.0
 )
 
 go 1.13
